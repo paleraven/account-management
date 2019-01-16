@@ -3,11 +3,13 @@ package com.kretov.accountmanagement.controller;
 import static com.kretov.accountmanagement.util.AccountUtil.validateAccount;
 import static com.kretov.accountmanagement.util.CustomerUtil.validateCustomer;
 
+import com.kretov.accountmanagement.dto.AccountDto;
 import com.kretov.accountmanagement.entity.Account;
 import com.kretov.accountmanagement.service.AccountService;
 import com.kretov.accountmanagement.service.CustomerService;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +31,9 @@ public class AccountController {
 	 * @return json со всеми счетами
 	 */
 	@GetMapping("/accounts")
-	List<Account> getAllAccounts() {
-		return accountService.findAllAccounts();
+	List<String> getAllAccounts() {
+		List<Account> accounts = accountService.findAllAccounts();
+		return accounts.stream().map(AccountDto::new).map(AccountDto::toString).collect(Collectors.toList());
 	}
 
 	/**
@@ -41,10 +44,11 @@ public class AccountController {
 	 * @return json со всеми счетами клиента
 	 */
 	@GetMapping("/accounts/{id}")
-	List<Account> getAccountsByCustomerId(@PathVariable String id) {
+	List<String> getAccountsByCustomerId(@PathVariable String id) {
 		Long customerId = Long.valueOf(id);
 		if (validateCustomer(customerService, customerId)) {
-			return accountService.findByCustomer(customerService.findById(customerId));
+			List<Account> accounts = accountService.findByCustomer(customerService.findById(customerId));
+			return accounts.stream().map(AccountDto::new).map(AccountDto::toString).collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
@@ -57,12 +61,13 @@ public class AccountController {
 	 * @return json конкретного счета
 	 */
 	@GetMapping("/account/{id}")
-	Account getAccountByAccountId(@PathVariable String id) {
+	String getAccountByAccountId(@PathVariable String id) {
 		Long accountId = Long.valueOf(id);
 		if (validateAccount(accountService, accountId)) {
-			return accountService.findById(accountId);
+			AccountDto accountDto = new AccountDto(accountService.findById(accountId));
+			return accountDto.toString();
 		}
-		return null;
+		return "Illegal account";
 	}
 
 	/**
@@ -74,13 +79,14 @@ public class AccountController {
 	 * @return json с новым состоянием счета
 	 */
 	@GetMapping("/deposit/{id}/{money}")
-	Account depositMoney(@PathVariable String id, @PathVariable String money) {
+	String depositMoney(@PathVariable String id, @PathVariable String money) {
 		Long accountId = Long.valueOf(id);
 		if (validateAccount(accountService, accountId)) {
 			accountService.depositMoney(accountService.findById(accountId), Double.valueOf(money));
-			return accountService.findById(accountId);
+			AccountDto accountDto = new AccountDto(accountService.findById(accountId));
+			return accountDto.toString();
 		}
-		return null;
+		return "Illegal account";
 	}
 
 	/**
@@ -89,14 +95,19 @@ public class AccountController {
 	 * curl localhost:9090/withdraw/1/100
 	 * @param id счет
 	 * @param money сумма снятия
-	 * @return Статус операции (могла быть слишком большая сумма снятия)
+	 * @return Статус операции (могла быть слишком большая сумма снятия) и новое состояние счета
 	 */
 	@GetMapping("/withdraw/{id}/{money}")
 	String withdrawMoney(@PathVariable String id, @PathVariable String money) {
 		Long accountId = Long.valueOf(id);
 		if (validateAccount(accountService, accountId)) {
 			boolean isSuccessWithdraw = accountService.withdrawMoney(accountService.findById(accountId), Double.valueOf(money));
-			return isSuccessWithdraw ? "Successful withdraw" : "Withdraw failed. Not enough money";
+			if (isSuccessWithdraw) {
+				AccountDto accountDto = new AccountDto(accountService.findById(accountId));
+				return "Successful withdraw.\nAccount: " + accountDto.toString();
+			} else {
+				return "Withdraw failed. Not enough money";
+			}
 		}
 		return "Operation isn't executed";
 	}
@@ -108,7 +119,7 @@ public class AccountController {
 	 * @param sourceId
 	 * @param destinationId
 	 * @param money
-	 * @return Статус операции (могло быть недостаточно денег на счету)
+	 * @return Статус операции (могло быть недостаточно денег на счету) и новые состояния счетов
 	 */
 	@GetMapping("/transfer/{sourceId}/{destinationId}/{money}")
 	String transferMoney(@PathVariable String sourceId, @PathVariable String destinationId, @PathVariable String money) {
@@ -118,7 +129,13 @@ public class AccountController {
 			boolean isSuccessTransfer = accountService.transferMoney(accountService.findById(sourceAccountId),
 					accountService.findById(destinationAccountId),
 					Double.valueOf(money));
-			return isSuccessTransfer ? "Successful transfer" : "TransferFailed. Not enough money on source account";
+			if (isSuccessTransfer) {
+				AccountDto sourceAccountDto = new AccountDto(accountService.findById(sourceAccountId));
+				AccountDto destinationAccountDto = new AccountDto(accountService.findById(destinationAccountId));
+				return "Successful transfer.\nSource account: " + sourceAccountDto.toString() + ".\nDestination account: " + destinationAccountDto.toString();
+			} else {
+				return "Withdraw failed. Not enough money";
+			}
 		}
 		return "Operation isn't executed";
 	}
