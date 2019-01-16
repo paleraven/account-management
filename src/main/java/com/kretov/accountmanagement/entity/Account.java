@@ -1,8 +1,10 @@
 package com.kretov.accountmanagement.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -12,8 +14,10 @@ public class Account {
 	private Long id;
 
 	@ManyToOne
+	@JoinColumn(name = "customer_id")
 	private Customer customer;
 
+	@Column(name = "money")
 	private Double money;
 
 	public Long getId() {

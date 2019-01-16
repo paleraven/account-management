@@ -18,8 +18,12 @@ public class AccountService {
 	}
 
 	public Account findById(Long id) {
-		Optional<Account> customer = accountRepository.findById(id);
-		return customer.orElseGet(null);
+		Optional<Account> account = accountRepository.findById(id);
+		return account.orElseGet(null);
+	}
+
+	public List<Account> findAllAccounts() {
+		return accountRepository.findAll();
 	}
 
 	public Account save(Account account) {
