@@ -2,6 +2,8 @@ package com.kretov.accountmanagement.dto;
 
 import com.kretov.accountmanagement.entity.Customer;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 public class CustomerDto {
 	private Long id;
 	private String firstName;
@@ -39,7 +41,22 @@ public class CustomerDto {
 
 	@Override
 	public String toString() {
-		return "id: " + this.id.toString() + " Name: " + this.firstName + " Family: " + this.lastName;
+		StringBuilder stringBuilder = new StringBuilder();
+		if (this.id != null) {
+			stringBuilder.append("id: ");
+			stringBuilder.append(this.id.toString());
+			stringBuilder.append(";");
+		}
+		if (!isBlank(this.firstName)) {
+			stringBuilder.append(" Name: ");
+			stringBuilder.append(this.firstName);
+			stringBuilder.append(";");
+		}
+		if (!isBlank(this.lastName)) {
+			stringBuilder.append(" Family: ");
+			stringBuilder.append(this.lastName);
+		}
+		return  stringBuilder.toString();
 	}
 
 }

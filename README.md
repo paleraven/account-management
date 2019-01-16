@@ -1,10 +1,13 @@
 Используется HSQLDB, инициализация БД при старте приложения.
 Таблицы в файле schema.sql, тестовые данные в data.sql (тоже заполняется при старте).
 
-REST-контроллер AccountController.
+REST-контроллеры AccountController и CustomerController.
 Запросы проверяются через curl ( https://curl.haxx.se/download.html ).
 
 _Примеры локальных запросов (порт 9090)_
+
+Получить всех клиентов:
+**curl localhost:9090/customers**
 
 Получить все счета:
 **curl localhost:9090/accounts**
