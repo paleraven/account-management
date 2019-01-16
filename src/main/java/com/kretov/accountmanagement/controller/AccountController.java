@@ -56,11 +56,11 @@ public class AccountController {
 	/**
 	 * Получить конкретный счет
 	 * Пример запроса в curl:
-	 * curl localhost:9090/account/1
+	 * curl localhost:9090/accountInfo/1
 	 * @param id счет
 	 * @return json конкретного счета
 	 */
-	@GetMapping("/account/{id}")
+	@GetMapping("/accountInfo/{id}")
 	String getAccountByAccountId(@PathVariable String id) {
 		Long accountId = Long.valueOf(id);
 		if (validateAccount(accountService, accountId)) {
@@ -116,9 +116,9 @@ public class AccountController {
 	 * Перевести со счета на счет
 	 * Пример запроса в curl:
 	 * curl localhost:9090/transfer/1/2/100
-	 * @param sourceId
-	 * @param destinationId
-	 * @param money
+	 * @param sourceId счет снятия
+	 * @param destinationId счет пополнения
+	 * @param money сумма перевода
 	 * @return Статус операции (могло быть недостаточно денег на счету) и новые состояния счетов
 	 */
 	@GetMapping("/transfer/{sourceId}/{destinationId}/{money}")
