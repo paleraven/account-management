@@ -11,7 +11,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -68,11 +67,13 @@ public class AccountController {
 
 	/**
 	 * Положить деньги на счет
+	 * Пример запроса в curl:
+	 * curl localhost:9090/deposit/1/100
 	 * @param id счет
 	 * @param money сумма пополнения
 	 * @return json с новым состоянием счета
 	 */
-	@PostMapping("/deposit/{id}/{money}")
+	@GetMapping("/deposit/{id}/{money}")
 	Account depositMoney(@PathVariable String id, @PathVariable String money) {
 		Long accountId = Long.valueOf(id);
 		if (validateAccount(accountService, accountId)) {
@@ -82,25 +83,44 @@ public class AccountController {
 		return null;
 	}
 
-	@PostMapping("/withdraw")
-	Account withdrawMoney(@PathVariable String id, @PathVariable String money) {
+	/**
+	 * Снять деньги со счета
+	 * Пример запроса в curl:
+	 * curl localhost:9090/withdraw/1/100
+	 * @param id счет
+	 * @param money сумма снятия
+	 * @return Статус операции (могла быть слишком большая сумма снятия)
+	 */
+	@GetMapping("/withdraw/{id}/{money}")
+	String withdrawMoney(@PathVariable String id, @PathVariable String money) {
 		Long accountId = Long.valueOf(id);
 		if (validateAccount(accountService, accountId)) {
-			accountService.withdrawMoney(accountService.findById(accountId), Double.valueOf(money));
-			return accountService.findById(accountId);
+			boolean isSuccessWithdraw = accountService.withdrawMoney(accountService.findById(accountId), Double.valueOf(money));
+			return isSuccessWithdraw ? "Successful withdraw" : "Withdraw failed. Not enough money";
 		}
-		return null;
+		return "Operation isn't executed";
 	}
 
-	@PostMapping("/transfer")
-	boolean transferMoney(@PathVariable String sourceId, @PathVariable String destinationId, @PathVariable String money) {
+	/**
+	 * Перевести со счета на счет
+	 * Пример запроса в curl:
+	 * curl localhost:9090/transfer/1/2/100
+	 * @param sourceId
+	 * @param destinationId
+	 * @param money
+	 * @return Статус операции (могло быть недостаточно денег на счету)
+	 */
+	@GetMapping("/transfer/{sourceId}/{destinationId}/{money}")
+	String transferMoney(@PathVariable String sourceId, @PathVariable String destinationId, @PathVariable String money) {
 		Long sourceAccountId = Long.valueOf(sourceId);
 		Long destinationAccountId = Long.valueOf(destinationId);
 		if (validateAccount(accountService, sourceAccountId) && validateAccount(accountService, destinationAccountId) ) {
-			accountService.transferMoney(accountService.findById(sourceAccountId), accountService.findById(destinationAccountId), Double.valueOf(money));
-			return true;
+			boolean isSuccessTransfer = accountService.transferMoney(accountService.findById(sourceAccountId),
+					accountService.findById(destinationAccountId),
+					Double.valueOf(money));
+			return isSuccessTransfer ? "Successful transfer" : "TransferFailed. Not enough money on source account";
 		}
-		return false;
+		return "Operation isn't executed";
 	}
 
 }

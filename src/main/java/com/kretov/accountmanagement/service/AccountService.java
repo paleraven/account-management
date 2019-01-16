@@ -36,7 +36,7 @@ public class AccountService {
 	 * @param money сумма пополнения
 	 */
 	public void depositMoney(Account account, Double money) {
-		account.setMoney(money);
+		account.setMoney(account.getMoney() + money);
 		this.save(account);
 	}
 
