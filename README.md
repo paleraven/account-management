@@ -1,5 +1,21 @@
+Приложение на Java, Spring Boot и JPA.
+
+**Основные операции**
+
+Перевод денег с одного счёта на другой (transfer);
+положить деньги на счёт (deposit);
+снять деньги со счёта (withdraw).
+Отрицательный баланс счета недопустим.
+
 Используется HSQLDB, инициализация БД при старте приложения.
+
 Таблицы в файле schema.sql, тестовые данные в data.sql (тоже заполняется при старте).
+CUSTOMER - таблица клиентов
+ACCOUNT - таблица счетов, связана с клиентами по полю CUSTOMER_ID
+
+Сборка maven (mvn clean package). Формируется jar
+
+Сделаны юнит-тесты на AccountService в части операций transfer, deposit и withdraw
 
 REST-контроллеры AccountController и CustomerController.
 Запросы проверяются через curl ( https://curl.haxx.se/download.html ).

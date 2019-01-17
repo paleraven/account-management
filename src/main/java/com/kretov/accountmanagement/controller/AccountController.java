@@ -87,11 +87,15 @@ public class AccountController {
 		Long accountId = Long.valueOf(id);
 		Account account = accountService.findById(accountId);
 		if (account != null) {
-			accountService.depositMoney(account, Double.valueOf(money));
+			Double deposit = Double.valueOf(money);
+			if (deposit < 0) {
+				return "Operation isn't executed. The deposit sum must be a positive number";
+			}
+			accountService.depositMoney(account, deposit);
 			AccountDto accountDto = new AccountDto(accountService.findById(accountId));
 			return accountDto.toString();
 		}
-		return "Illegal account";
+		return "Operation isn't executed. Illegal account";
 	}
 
 	/**
@@ -108,7 +112,11 @@ public class AccountController {
 		Long accountId = Long.valueOf(id);
 		Account account = accountService.findById(accountId);
 		if (account != null) {
-			boolean isSuccessWithdraw = accountService.withdrawMoney(account, Double.valueOf(money));
+			Double withdraw = Double.valueOf(money);
+			if (withdraw < 0) {
+				return "Operation isn't executed. The withdraw sum must be a positive number";
+			}
+			boolean isSuccessWithdraw = accountService.withdrawMoney(account, withdraw);
 			if (isSuccessWithdraw) {
 				AccountDto accountDto = new AccountDto(accountService.findById(accountId));
 				return "Successful withdraw.\nAccount: " + accountDto.toString();
@@ -136,15 +144,18 @@ public class AccountController {
 		Account sourceAccount = accountService.findById(sourceAccountId);
 		Account destinationAccount = accountService.findById(destinationAccountId);
 		if (sourceAccount != null && destinationAccount != null) {
-			boolean isSuccessTransfer = accountService
-					.transferMoney(sourceAccount, destinationAccount, Double.valueOf(money));
+			Double transfer = Double.valueOf(money);
+			if (transfer < 0) {
+				return "Operation isn't executed. The transfer sum must be a positive number";
+			}
+			boolean isSuccessTransfer = accountService.transferMoney(sourceAccount, destinationAccount, transfer);
 			if (isSuccessTransfer) {
 				AccountDto sourceAccountDto = new AccountDto(accountService.findById(sourceAccountId));
 				AccountDto destinationAccountDto = new AccountDto(accountService.findById(destinationAccountId));
 				return "Successful transfer.\nSource account: " + sourceAccountDto.toString() + ".\nDestination account: "
 						+ destinationAccountDto.toString();
 			} else {
-				return "Withdraw failed. Not enough money";
+				return "Transfer failed. Not enough money";
 			}
 		}
 		return "Operation isn't executed";
