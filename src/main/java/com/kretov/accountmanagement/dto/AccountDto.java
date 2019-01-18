@@ -54,7 +54,7 @@ public class AccountDto {
 	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         if (this.id != null) {
-            stringBuilder.append("id: ");
+            stringBuilder.append("Account id: ");
             stringBuilder.append(this.id.toString());
             stringBuilder.append(";");
         }

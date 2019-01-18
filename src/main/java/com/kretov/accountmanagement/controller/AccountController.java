@@ -41,17 +41,25 @@ public class AccountController {
 	 * curl localhost:9090/accounts/1
 	 *
 	 * @param id клиент
-	 * @return json со всеми счетами клиента
+	 * @return все счета клиента или сообщение, что клиент некорректный
 	 */
 	@GetMapping("/accounts/{id}")
-	List<String> getAccountsByCustomerId(@PathVariable String id) {
+	String getAccountsByCustomerId(@PathVariable String id) {
 		Long customerId = Long.valueOf(id);
 		Customer customer = customerService.findById(customerId);
 		if (customer != null) {
 			List<Account> accounts = accountService.findByCustomer(customer);
-			return accounts.stream().map(AccountDto::new).map(AccountDto::toString).collect(Collectors.toList());
+			StringBuilder stringBuilder = new StringBuilder();
+			for (Account account : accounts) {
+				if (account != null) {
+					AccountDto accountDto = new AccountDto(account);
+					stringBuilder.append(accountDto.toString());
+					stringBuilder.append("\n");
+				}
+			}
+			return stringBuilder.toString();
 		}
-		return Collections.emptyList();
+		return "Illegal customer";
 	}
 
 	/**
@@ -60,7 +68,7 @@ public class AccountController {
 	 * curl localhost:9090/accountInfo/1
 	 *
 	 * @param id счет
-	 * @return json конкретного счета
+	 * @return информация по счету или сообщение, что счет некорректный
 	 */
 	@GetMapping("/accountInfo/{id}")
 	String getAccountByAccountId(@PathVariable String id) {
