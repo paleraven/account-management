@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class UserController {
+public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
