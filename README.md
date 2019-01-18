@@ -18,7 +18,12 @@ ACCOUNT - таблица счетов, связана с клиентами по
 Сделаны юнит-тесты на AccountService в части операций transfer, deposit и withdraw
 
 REST-контроллеры AccountController и CustomerController.
-Запросы проверяются через curl ( https://curl.haxx.se/download.html ).
+
+**Добавлен swagger для удобной проверки API в браузере.**
+
+**UI доступен по адресу http://localhost:9090/swagger-ui.html**
+
+Можно проверить и через curl ( https://curl.haxx.se/download.html ).
 
 _Примеры локальных запросов (порт 9090)_
 
