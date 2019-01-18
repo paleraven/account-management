@@ -19,7 +19,7 @@ public class AccountService {
 
 	public Account findById(Long id) {
 		Optional<Account> account = accountRepository.findById(id);
-		return account.orElseGet(null);
+		return account.orElse(null);
 	}
 
 	public List<Account> findAllAccounts() {
