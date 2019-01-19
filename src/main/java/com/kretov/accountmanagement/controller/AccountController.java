@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -83,14 +84,12 @@ public class AccountController {
 
 	/**
 	 * Положить деньги на счет
-	 * Пример запроса в curl:
-	 * curl localhost:9090/deposit/1/100
 	 *
 	 * @param id счет
 	 * @param money сумма пополнения
 	 * @return json с новым состоянием счета
 	 */
-	@GetMapping("/deposit/{id}/{money}")
+	@PutMapping("/deposit/{id}/{money}")
 	String depositMoney(@PathVariable String id, @PathVariable String money) {
 		Long accountId = Long.valueOf(id);
 		Account account = accountService.findById(accountId);
@@ -108,14 +107,12 @@ public class AccountController {
 
 	/**
 	 * Снять деньги со счета
-	 * Пример запроса в curl:
-	 * curl localhost:9090/withdraw/1/100
 	 *
 	 * @param id счет
 	 * @param money сумма снятия
 	 * @return Статус операции (могла быть слишком большая сумма снятия) и новое состояние счета
 	 */
-	@GetMapping("/withdraw/{id}/{money}")
+	@PutMapping("/withdraw/{id}/{money}")
 	String withdrawMoney(@PathVariable String id, @PathVariable String money) {
 		Long accountId = Long.valueOf(id);
 		Account account = accountService.findById(accountId);
@@ -137,15 +134,13 @@ public class AccountController {
 
 	/**
 	 * Перевести со счета на счет
-	 * Пример запроса в curl:
-	 * curl localhost:9090/transfer/1/2/100
 	 *
 	 * @param sourceId счет снятия
 	 * @param destinationId счет пополнения
 	 * @param money сумма перевода
 	 * @return Статус операции (могло быть недостаточно денег на счету) и новые состояния счетов
 	 */
-	@GetMapping("/transfer/{sourceId}/{destinationId}/{money}")
+	@PutMapping("/transfer/{sourceId}/{destinationId}/{money}")
 	String transferMoney(@PathVariable String sourceId, @PathVariable String destinationId, @PathVariable String money) {
 		Long sourceAccountId = Long.valueOf(sourceId);
 		Long destinationAccountId = Long.valueOf(destinationId);
