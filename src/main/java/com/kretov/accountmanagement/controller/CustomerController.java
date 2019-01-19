@@ -34,12 +34,16 @@ public class CustomerController {
      */
     @DeleteMapping("/customerDelete/{id}")
     String deleteCustomerByCustomerId(@PathVariable String id) {
-        Long customerId = Long.valueOf(id);
-        Customer customer = customerService.findById(customerId);
-        if (customer != null) {
-            customerService.deleteById(customerId);
-            return "Customer with id " + id + " was deleted";
+        try {
+            Long customerId = Long.valueOf(id);
+            Customer customer = customerService.findById(customerId);
+            if (customer != null) {
+                customerService.deleteById(customerId);
+                return "Customer with id " + id + " was deleted";
+            }
+            return "Illegal customer id";
+        } catch (NumberFormatException e) {
+            return "Operation isn't executed. Illegal format of input data. Please, use number.";
         }
-        return "Illegal customer id";
     }
 }
