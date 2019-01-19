@@ -96,9 +96,9 @@ public class AccountController {
                 accountService.deleteById(accountId);
                 return "Account with id " + id + " was deleted";
             }
-            return "Illegal account id";
+            return "Operation isn't executed. Illegal account id";
         } catch (NumberFormatException e) {
-            return "Illegal format of input data. Please, use number.";
+            return "Operation isn't executed. Illegal format of input data. Please, use number.";
         }
 	}
 
@@ -114,6 +114,36 @@ public class AccountController {
         account.setMoney(newAccount.getMoney());
         accountService.save(account);
         return "Created account with id " + account.getId();
+    }
+
+    /**
+     * Обновить существующий счет
+     * @param id идентификатор
+     * @param updatedAccount новые данные (id клиента и сумма)
+     * @return Статус операции
+     */
+    @PutMapping(value="/accountUpdate/{id}", consumes = APPLICATION_JSON_VALUE)
+    String updateAccount(@PathVariable String id, @RequestBody AccountDto updatedAccount) {
+        try {
+            Long accountId = Long.valueOf(id);
+            Account account = accountService.findById(accountId);
+            if (account != null) {
+                if (updatedAccount.getMoney() < 0) {
+                    return "Operation isn't executed. Illegal count of money in json. The money must be a positive number";
+                }
+                Customer customer = customerService.findById(updatedAccount.getCustomerId());
+                if (customer != null) {
+                    account.setCustomer(customer);
+                    account.setMoney(updatedAccount.getMoney());
+                    accountService.save(account);
+                    return "Updated account with id " + account.getId();
+                }
+                return "Operation isn't executed. Illegal customer id in json";
+            }
+            return "Operation isn't executed. Illegal account id";
+        } catch (NumberFormatException e) {
+            return "Operation isn't executed. Illegal format of input data. Please, use number.";
+        }
     }
 
 	/**

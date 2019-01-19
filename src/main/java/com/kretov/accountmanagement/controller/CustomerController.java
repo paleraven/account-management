@@ -43,7 +43,7 @@ public class CustomerController {
                 customerService.deleteById(customerId);
                 return "Customer with id " + id + " was deleted";
             }
-            return "Illegal customer id";
+            return "Operation isn't executed. Illegal customer id";
         } catch (NumberFormatException e) {
             return "Operation isn't executed. Illegal format of input data. Please, use number.";
         }
@@ -61,5 +61,28 @@ public class CustomerController {
         customer.setLastName(newCustomer.getLastName());
         customerService.save(customer);
         return "Created customer with id " + customer.getId();
+    }
+
+    /**
+     * Обновить существующего клиента
+     * @param id идентификатор
+     * @param updatedCustomer новые данные
+     * @return Статус операции
+     */
+    @PutMapping(value="/customerUpdate/{id}", consumes = APPLICATION_JSON_VALUE)
+    String updateCustomer(@PathVariable String id, @RequestBody CustomerDto updatedCustomer) {
+        try {
+            Long customerId = Long.valueOf(id);
+            Customer customer = customerService.findById(customerId);
+            if (customer != null) {
+                customer.setFirstName(updatedCustomer.getFirstName());
+                customer.setLastName(updatedCustomer.getLastName());
+                customerService.save(customer);
+                return "Updated customer with id " + customer.getId();
+            }
+            return "Operation isn't executed. Illegal customer id";
+        } catch (NumberFormatException e) {
+            return "Operation isn't executed. Illegal format of input data. Please, use number.";
+        }
     }
 }
