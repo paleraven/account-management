@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Entity
 public class Customer {
 	@Id
@@ -41,4 +43,23 @@ public class Customer {
 		this.lastName = lastName;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		if (this.id != null) {
+			stringBuilder.append("Id: ");
+			stringBuilder.append(this.id.toString());
+			stringBuilder.append(";");
+		}
+		if (!isBlank(this.firstName)) {
+			stringBuilder.append(" Name: ");
+			stringBuilder.append(this.firstName);
+			stringBuilder.append(";");
+		}
+		if (!isBlank(this.lastName)) {
+			stringBuilder.append(" Family: ");
+			stringBuilder.append(this.lastName);
+		}
+		return  stringBuilder.toString();
+	}
 }

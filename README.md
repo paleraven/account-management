@@ -5,6 +5,7 @@ _Отрицательный баланс счета недопустим._
 + _Перевести деньги с одного счёта на другой: **transfer**_
 + _Положить деньги на счёт: **deposit**_
 + _Снять деньги со счёта: **withdraw**_
++ Стандартные операции (создать, удалить, изменить счет и клиента; получить всех клиентов, все счета, все счета по конкретному клиенту, конкретный счет)
 
 ### Сборка приложения
 
@@ -17,7 +18,7 @@ _Отрицательный баланс счета недопустим._
 
 Таблицы описаны в файле _schema.sql_, тестовые данные описаны в _data.sql_ (тоже заполняется при старте).
 + **CUSTOMER** - таблица клиентов.
-+ **ACCOUNT** - таблица счетов, связана с клиентами по полю _CUSTOMER_ID_.
++ **ACCOUNT** - таблица счетов, связана с клиентами по полю _CUSTOMER_ID_. По умолчанию предусмотрено каскадное удаление.
 
 ### Техническая реализация
 
@@ -39,6 +40,15 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 + _Получить всех клиентов:_
 **curl localhost:9090/bank/customers**
 
++ _Удалить клиента с id=1:_
+**curl -X DELETE "http://localhost:9090/bank/customerDelete/1" -H  "accept: \*/\*"**
+
++ _Создать клиента Sergey Sidorov:_
+**curl -X POST "http://localhost:9090/bank/customerCreate" -H  "accept: \*/\*" -H  "Content-Type: application/json" -d "{  \\"firstName\\": \\"Sergey\\",  \\"lastName\\": \\"Sidorov\\"}"**
+
++ _Переименовать клиента с id=1 как Sergey Sidorov:_
+**curl -X PUT "http://localhost:9090/bank/customerUpdate/1" -H  "accept: */*" -H  "Content-Type: application/json" -d "{  \\"firstName\\": \\"Sergey\\",  \\"lastName\\": \\"Sidorov\\"}"**
+
 ##### AccountController
 
 + _Получить все счета:_
@@ -49,6 +59,15 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 
 + _Получить счет с id=1:_
 **curl localhost:9090/bank/accountInfo/1**
+
++ _Удалить счет с id=1:_
+**curl -X DELETE "http://localhost:9090/bank/accountDelete/1" -H  "accept: \*/\*"**
+
++ _Создать счет с id клиента 2 на 200 рублей:_
+**curl -X POST "http://localhost:9090/bank/accountCreate" -H  "accept: \*/\*" -H  "Content-Type: application/json" -d "{  \\"customerId\\": 2,  \\"money\\": 200}"**
+
++ _У счета с id=1 установить клиента с id=2 и установить сумму 200 рублей:_
+**curl -X PUT "http://localhost:9090/bank/accountUpdate/1" -H  "accept: \*/\*" -H  "Content-Type: application/json" -d "{  \\"customerId\\": 1,  \\"money\\": 200}"**
 
 + _Положить 100 рублей на счет 1:_
 **curl -X PUT "http://localhost:9090/bank/deposit/1/100" -H  "accept: \*/\*"**
