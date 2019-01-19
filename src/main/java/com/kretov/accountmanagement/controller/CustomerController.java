@@ -1,5 +1,6 @@
 package com.kretov.accountmanagement.controller;
 
+import com.kretov.accountmanagement.dto.CustomerDto;
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/bank")
@@ -44,5 +47,19 @@ public class CustomerController {
         } catch (NumberFormatException e) {
             return "Operation isn't executed. Illegal format of input data. Please, use number.";
         }
+    }
+
+    /**
+     * Создать нового клиента
+     * @param newCustomer dto с личными данными
+     * @return Статус операции
+     */
+    @PostMapping(value="/customerCreate", consumes = APPLICATION_JSON_VALUE)
+    String createCustomer(@RequestBody CustomerDto newCustomer) {
+        Customer customer = new Customer();
+        customer.setFirstName(newCustomer.getFirstName());
+        customer.setLastName(newCustomer.getLastName());
+        customerService.save(customer);
+        return "Created customer with id " + customer.getId();
     }
 }

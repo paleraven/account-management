@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @RestController
 @RequestMapping("/bank")
 public class AccountController {
@@ -99,6 +101,20 @@ public class AccountController {
             return "Illegal format of input data. Please, use number.";
         }
 	}
+
+    /**
+     * Создать счет
+     * @param newAccount dto с id клиента и суммой на счету
+     * @return Статус операции
+     */
+    @PostMapping(value="/accountCreate", consumes = APPLICATION_JSON_VALUE)
+    String createAccount(@RequestBody AccountDto newAccount) {
+        Account account = new Account();
+        account.setCustomer(customerService.findById(newAccount.getCustomerId()));
+        account.setMoney(newAccount.getMoney());
+        accountService.save(account);
+        return "Created account with id " + account.getId();
+    }
 
 	/**
 	 * Положить деньги на счет
