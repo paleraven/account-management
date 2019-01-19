@@ -1,49 +1,60 @@
-Приложение на Java, Spring Boot и JPA.
+# Приложение на Java, Spring Boot и JPA.
 
-**Основные операции**
+### **Основные операции**
+_Отрицательный баланс счета недопустим._
++ _Перевести деньги с одного счёта на другой: **transfer**_
++ _Положить деньги на счёт: **deposit**_
++ _Снять деньги со счёта: **withdraw**_
 
-Перевод денег с одного счёта на другой (transfer);
-положить деньги на счёт (deposit);
-снять деньги со счёта (withdraw).
-Отрицательный баланс счета недопустим.
+### Сборка приложения
 
-Используется HSQLDB, инициализация БД при старте приложения.
++ Сборка _maven_ (_**mvn clean package**_).
++ Формируется _jar_-файл _**account-management-0.0.1-SNAPSHOT.jar**_.
 
-Таблицы в файле schema.sql, тестовые данные в data.sql (тоже заполняется при старте).
-CUSTOMER - таблица клиентов
-ACCOUNT - таблица счетов, связана с клиентами по полю CUSTOMER_ID
+### Хранение данных
 
-Сборка maven (mvn clean package). Формируется jar
+Используется _HSQLDB_, инициализация базы данных при старте приложения.
 
-Сделаны юнит-тесты на AccountService в части операций transfer, deposit и withdraw
+Таблицы описаны в файле _schema.sql_, тестовые данные описаны в _data.sql_ (тоже заполняется при старте).
++ **CUSTOMER** - таблица клиентов.
++ **ACCOUNT** - таблица счетов, связана с клиентами по полю _CUSTOMER_ID_.
 
-REST-контроллеры AccountController и CustomerController.
+### Техническая реализация
 
-**Добавлен swagger для удобной проверки API в браузере.**
++ Приложение сделано на _Spring Boot_, параметры в _application.properties_.
++ Слои контроллеров (REST-контроллеры _AccountController_ и _CustomerController_), сервисов и репозитория (_JpaRepository_).
++ Сделаны юнит-тесты на _AccountService_ в части операций _transfer_, _deposit_ и _withdraw_.
++ Добавлен **_swagger_** для удобной проверки API в браузере.
 
-**UI доступен по адресу http://localhost:9090/swagger-ui.html**
+### Проверка приложения
 
-Можно проверить и через curl ( https://curl.haxx.se/download.html ).
+UI _swagger_ доступен по адресу **http://localhost:9090/swagger-ui.html**
 
-_Примеры локальных запросов (порт 9090)_
+Можно проверить и напрямую через _curl_ [Скачать curl](https://curl.haxx.se/download.html)
 
-Получить всех клиентов:
+#### Примеры локальных запросов (порт 9090)
+
+##### CustomerController
+
++ _Получить всех клиентов:_
 **curl localhost:9090/customers**
 
-Получить все счета:
+##### AccountController
+
++ _Получить все счета:_
 **curl localhost:9090/accounts**
 
-Получить все счета клиента с id=1:
++ _Получить все счета клиента с id=1:_
 **curl localhost:9090/accounts/1**
 
-Получить счет с id=1:
++ _Получить счет с id=1:_
 **curl localhost:9090/accountInfo/1**
 
-Положить 100 рублей на счет 1:
-**curl localhost:9090/deposit/1/100**
++ _Положить 100 рублей на счет 1:_
+**curl -X PUT "http://localhost:9090/deposit/1/100" -H  "accept: \*/\*"**
 
-Снять 100 рублей со счета 1:
-**curl localhost:9090/withdraw/1/100**
++ _Снять 100 рублей со счета 1:_
+**curl -X PUT "http://localhost:9090/withdraw/1/100" -H  "accept: \*/\*"**
 
-Перевести 100 рублей со счета 1 на счет 2:
-**curl localhost:9090/transfer/1/2/100**
++ _Перевести 100 рублей со счета 1 на счет 2:_
+**curl -X PUT "http://localhost:9090/withdraw/1/2/100" -H  "accept: \*/\*"**
