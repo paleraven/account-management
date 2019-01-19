@@ -37,24 +37,24 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 ##### CustomerController
 
 + _Получить всех клиентов:_
-**curl localhost:9090/customers**
+**curl localhost:9090/bank/customers**
 
 ##### AccountController
 
 + _Получить все счета:_
-**curl localhost:9090/accounts**
+**curl localhost:9090/bank/accounts**
 
 + _Получить все счета клиента с id=1:_
-**curl localhost:9090/accounts/1**
+**curl localhost:9090/bank/accounts/1**
 
 + _Получить счет с id=1:_
-**curl localhost:9090/accountInfo/1**
+**curl localhost:9090/bank/accountInfo/1**
 
 + _Положить 100 рублей на счет 1:_
-**curl -X PUT "http://localhost:9090/deposit/1/100" -H  "accept: \*/\*"**
+**curl -X PUT "http://localhost:9090/bank/deposit/1/100" -H  "accept: \*/\*"**
 
 + _Снять 100 рублей со счета 1:_
-**curl -X PUT "http://localhost:9090/withdraw/1/100" -H  "accept: \*/\*"**
+**curl -X PUT "http://localhost:9090/bank/withdraw/1/100" -H  "accept: \*/\*"**
 
 + _Перевести 100 рублей со счета 1 на счет 2:_
-**curl -X PUT "http://localhost:9090/withdraw/1/2/100" -H  "accept: \*/\*"**
+**curl -X PUT "http://localhost:9090/bank/withdraw/1/2/100" -H  "accept: \*/\*"**

@@ -9,12 +9,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/bank")
 public class AccountController {
 
 	@Autowired
@@ -25,8 +23,6 @@ public class AccountController {
 
 	/**
 	 * Получить все банковские счета
-	 * Пример запроса в curl:
-	 * curl localhost:9090/accounts
 	 *
 	 * @return json со всеми счетами
 	 */
@@ -38,8 +34,6 @@ public class AccountController {
 
 	/**
 	 * Получить все счета конкретного клиента
-	 * Пример запроса в curl:
-	 * curl localhost:9090/accounts/1
 	 *
 	 * @param id клиент
 	 * @return все счета клиента или сообщение, что клиент некорректный
@@ -65,8 +59,6 @@ public class AccountController {
 
 	/**
 	 * Получить конкретный счет
-	 * Пример запроса в curl:
-	 * curl localhost:9090/accountInfo/1
 	 *
 	 * @param id счет
 	 * @return информация по счету или сообщение, что счет некорректный
