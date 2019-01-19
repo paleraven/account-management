@@ -17,7 +17,7 @@ _Отрицательный баланс счета недопустим._
 
 Таблицы описаны в файле _schema.sql_, тестовые данные описаны в _data.sql_ (тоже заполняется при старте).
 + **CUSTOMER** - таблица клиентов.
-+ **ACCOUNT** - таблица счетов, связана с клиентами по полю _CUSTOMER_ID_.
++ **ACCOUNT** - таблица счетов, связана с клиентами по полю _CUSTOMER_ID_. По умолчанию предусмотрено каскадное удаление.
 
 ### Техническая реализация
 
@@ -39,6 +39,9 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 + _Получить всех клиентов:_
 **curl localhost:9090/bank/customers**
 
++ _Удалить клиента с id=1:_
+**curl -X DELETE "http://localhost:9090/bank/customerDelete/1" -H  "accept: \*/\*"**
+
 ##### AccountController
 
 + _Получить все счета:_
@@ -49,6 +52,9 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 
 + _Получить счет с id=1:_
 **curl localhost:9090/bank/accountInfo/1**
+
++ _Удалить счет с id=1:_
+**curl -X DELETE "http://localhost:9090/bank/accountDelete/1" -H  "accept: \*/\*"**
 
 + _Положить 100 рублей на счет 1:_
 **curl -X PUT "http://localhost:9090/bank/deposit/1/100" -H  "accept: \*/\*"**

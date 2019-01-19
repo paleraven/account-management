@@ -54,7 +54,7 @@ public class AccountController {
 			}
 			return stringBuilder.toString();
 		}
-		return "Illegal customer";
+		return "Illegal customer id";
 	}
 
 	/**
@@ -71,7 +71,23 @@ public class AccountController {
 			AccountDto accountDto = new AccountDto(account);
 			return accountDto.toString();
 		}
-		return "Illegal account";
+		return "Illegal account id";
+	}
+
+	/**
+	 * Удалить счет
+	 * @param id идентификатор
+	 * @return Статус операции
+	 */
+	@DeleteMapping("/accountDelete/{id}")
+	String deleteAccountByAccountId(@PathVariable String id) {
+		Long accountId = Long.valueOf(id);
+		Account account = accountService.findById(accountId);
+		if (account != null) {
+			accountService.deleteById(accountId);
+			return "Account with id " + id + " was deleted";
+		}
+		return "Illegal account id";
 	}
 
 	/**
@@ -94,7 +110,7 @@ public class AccountController {
 			AccountDto accountDto = new AccountDto(accountService.findById(accountId));
 			return accountDto.toString();
 		}
-		return "Operation isn't executed. Illegal account";
+		return "Operation isn't executed. Illegal account id";
 	}
 
 	/**
@@ -121,7 +137,7 @@ public class AccountController {
 				return "Withdraw failed. Not enough money";
 			}
 		}
-		return "Operation isn't executed";
+		return "Operation isn't executed. Illegal account id";
 	}
 
 	/**
@@ -153,7 +169,7 @@ public class AccountController {
 				return "Transfer failed. Not enough money";
 			}
 		}
-		return "Operation isn't executed";
+		return "Operation isn't executed. Illegal account id";
 	}
 
 }
