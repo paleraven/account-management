@@ -1,6 +1,5 @@
 package com.kretov.accountmanagement.controller;
 
-import com.kretov.accountmanagement.dto.CustomerDto;
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class CustomerController {
     @GetMapping("/customers")
     List<String> getAllCustomers() {
         List<Customer> customers = customerService.findAll();
-        return customers.stream().map(CustomerDto::new).map(CustomerDto::toString).collect(Collectors.toList());
+        return customers.stream().map(Customer::toString).collect(Collectors.toList());
     }
 
     /**

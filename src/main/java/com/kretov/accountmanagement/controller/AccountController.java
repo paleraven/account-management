@@ -29,7 +29,7 @@ public class AccountController {
 	@GetMapping("/accounts")
 	List<String> getAllAccounts() {
 		List<Account> accounts = accountService.findAllAccounts();
-		return accounts.stream().map(AccountDto::new).map(AccountDto::toString).collect(Collectors.toList());
+		return accounts.stream().map(Account::toString).collect(Collectors.toList());
 	}
 
 	/**
@@ -48,8 +48,7 @@ public class AccountController {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (Account account : accounts) {
                     if (account != null) {
-                        AccountDto accountDto = new AccountDto(account);
-                        stringBuilder.append(accountDto.toString());
+                        stringBuilder.append(account.toString());
                         stringBuilder.append("\n");
                     }
                 }
@@ -73,8 +72,7 @@ public class AccountController {
             Long accountId = Long.valueOf(id);
             Account account = accountService.findById(accountId);
             if (account != null) {
-                AccountDto accountDto = new AccountDto(account);
-                return accountDto.toString();
+                return account.toString();
             }
             return "Illegal account id";
         } catch (NumberFormatException e) {
@@ -120,8 +118,7 @@ public class AccountController {
                     return "Operation isn't executed. The deposit sum must be a positive number";
                 }
                 accountService.depositMoney(account, deposit);
-                AccountDto accountDto = new AccountDto(accountService.findById(accountId));
-                return accountDto.toString();
+                return accountService.findById(accountId).toString();
             }
             return "Operation isn't executed. Illegal account id";
         } catch (NumberFormatException e) {
@@ -148,8 +145,7 @@ public class AccountController {
                 }
                 boolean isSuccessWithdraw = accountService.withdrawMoney(account, withdraw);
                 if (isSuccessWithdraw) {
-                    AccountDto accountDto = new AccountDto(accountService.findById(accountId));
-                    return "Successful withdraw.\nAccount: " + accountDto.toString();
+                    return "Successful withdraw.\nAccount: " + accountService.findById(accountId).toString();
                 } else {
                     return "Withdraw failed. Not enough money";
                 }
@@ -170,6 +166,9 @@ public class AccountController {
 	 */
 	@PutMapping("/transfer/{sourceId}/{destinationId}/{money}")
 	String transferMoney(@PathVariable String sourceId, @PathVariable String destinationId, @PathVariable String money) {
+	    if (sourceId.equals(destinationId)) {
+	        return "Operation isn't executed. Illegal format of input data. Please, use different account ids.";
+        }
 	    try {
             Long sourceAccountId = Long.valueOf(sourceId);
             Long destinationAccountId = Long.valueOf(destinationId);
@@ -182,10 +181,8 @@ public class AccountController {
                 }
                 boolean isSuccessTransfer = accountService.transferMoney(sourceAccount, destinationAccount, transfer);
                 if (isSuccessTransfer) {
-                    AccountDto sourceAccountDto = new AccountDto(accountService.findById(sourceAccountId));
-                    AccountDto destinationAccountDto = new AccountDto(accountService.findById(destinationAccountId));
-                    return "Successful transfer.\nSource account: " + sourceAccountDto.toString() + ".\nDestination account: "
-                            + destinationAccountDto.toString();
+                    return "Successful transfer.\nSource account: " + accountService.findById(sourceAccountId).toString() +
+                            ".\nDestination account: " + accountService.findById(destinationAccountId).toString();
                 } else {
                     return "Transfer failed. Not enough money";
                 }

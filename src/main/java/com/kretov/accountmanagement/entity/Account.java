@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Entity
 public class Account {
 	@Id
@@ -42,6 +44,33 @@ public class Account {
 
 	public void setMoney(Double money) {
 		this.money = money;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		if (this.id != null) {
+			stringBuilder.append("Account id: ");
+			stringBuilder.append(this.id.toString());
+			stringBuilder.append(";");
+		}
+		if (this.customer != null) {
+			if (!isBlank(this.getCustomer().getFirstName())) {
+				stringBuilder.append(" Name: ");
+				stringBuilder.append(this.getCustomer().getFirstName());
+				stringBuilder.append(";");
+			}
+			if (!isBlank(this.getCustomer().getLastName())) {
+				stringBuilder.append(" Family: ");
+				stringBuilder.append(this.getCustomer().getLastName());
+				stringBuilder.append(";");
+			}
+		}
+		if (this.money != null) {
+			stringBuilder.append(" Money: ");
+			stringBuilder.append(this.money.toString());
+		}
+		return stringBuilder.toString();
 	}
 
 }
