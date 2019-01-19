@@ -5,6 +5,8 @@ import com.kretov.accountmanagement.entity.Account;
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.service.AccountService;
 import com.kretov.accountmanagement.service.CustomerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Api(value = "Account", description = "API для работы со счетами клиентов")
 @RestController
 @RequestMapping("/bank")
 public class AccountController {
@@ -28,6 +31,7 @@ public class AccountController {
 	 *
 	 * @return json со всеми счетами
 	 */
+    @ApiOperation(value = "Получить информацию о всех счетах")
 	@GetMapping("/accounts")
 	List<String> getAllAccounts() {
 		List<Account> accounts = accountService.findAllAccounts();
@@ -40,6 +44,7 @@ public class AccountController {
 	 * @param id клиент
 	 * @return все счета клиента или сообщение, что клиент некорректный
 	 */
+    @ApiOperation(value = "Получить все счета клиента")
 	@GetMapping("/accounts/{id}")
 	String getAccountsByCustomerId(@PathVariable String id) {
 	    try {
@@ -68,6 +73,7 @@ public class AccountController {
 	 * @param id счет
 	 * @return информация по счету или сообщение, что счет некорректный
 	 */
+    @ApiOperation(value = "Получить данные по счету")
 	@GetMapping("/accountInfo/{id}")
 	String getAccountByAccountId(@PathVariable String id) {
         try {
@@ -87,6 +93,7 @@ public class AccountController {
 	 * @param id идентификатор
 	 * @return Статус операции
 	 */
+    @ApiOperation(value = "Удалить счет")
 	@DeleteMapping("/accountDelete/{id}")
 	String deleteAccountByAccountId(@PathVariable String id) {
 	    try {
@@ -107,6 +114,7 @@ public class AccountController {
      * @param newAccount dto с id клиента и суммой на счету
      * @return Статус операции
      */
+    @ApiOperation(value = "Создать новый счет")
     @PostMapping(value="/accountCreate", consumes = APPLICATION_JSON_VALUE)
     String createAccount(@RequestBody AccountDto newAccount) {
         Account account = new Account();
@@ -122,6 +130,7 @@ public class AccountController {
      * @param updatedAccount новые данные (id клиента и сумма)
      * @return Статус операции
      */
+    @ApiOperation(value = "Изменить данные счета")
     @PutMapping(value="/accountUpdate/{id}", consumes = APPLICATION_JSON_VALUE)
     String updateAccount(@PathVariable String id, @RequestBody AccountDto updatedAccount) {
         try {
@@ -153,6 +162,7 @@ public class AccountController {
 	 * @param money сумма пополнения
 	 * @return json с новым состоянием счета
 	 */
+    @ApiOperation(value = "Положить деньги на счет")
 	@PutMapping("/deposit/{id}/{money}")
 	String depositMoney(@PathVariable String id, @PathVariable String money) {
 	    try {
@@ -179,6 +189,7 @@ public class AccountController {
 	 * @param money сумма снятия
 	 * @return Статус операции (могла быть слишком большая сумма снятия) и новое состояние счета
 	 */
+    @ApiOperation(value = "Снять деньги со счета")
 	@PutMapping("/withdraw/{id}/{money}")
 	String withdrawMoney(@PathVariable String id, @PathVariable String money) {
 	    try {
@@ -210,6 +221,7 @@ public class AccountController {
 	 * @param money сумма перевода
 	 * @return Статус операции (могло быть недостаточно денег на счету) и новые состояния счетов
 	 */
+    @ApiOperation(value = "Перевести деньги со счета на счет")
 	@PutMapping("/transfer/{sourceId}/{destinationId}/{money}")
 	String transferMoney(@PathVariable String sourceId, @PathVariable String destinationId, @PathVariable String money) {
 	    if (sourceId.equals(destinationId)) {
