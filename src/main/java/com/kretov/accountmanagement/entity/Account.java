@@ -22,6 +22,14 @@ public class Account {
 	@Column(name = "money")
 	private Double money;
 
+	public Account(Customer customer, Double money) {
+		this.customer = customer;
+		this.money = money;
+	}
+
+	public Account() {
+	}
+
 	public Long getId() {
 		return id;
 	}
