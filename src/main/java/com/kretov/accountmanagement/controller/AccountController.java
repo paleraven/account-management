@@ -102,13 +102,39 @@ public class AccountController {
 
     /**
      * Создать счет
-     * @param newAccount dto с id клиента и суммой на счету
+     * @param newAccount счет
      * @return Статус операции
      */
     public Response<Account> createAccount(Account newAccount) {
         try {
             accountService.save(newAccount);
             return new Response<>(SUCCESS, "Created account with id " + newAccount.getId(), Collections.singletonList(newAccount));
+        } catch (Exception e) {
+            return new Response<>(ERROR,"Account wasn't created", Collections.emptyList());
+        }
+    }
+
+    /**
+     * Создать счет
+     * @param customerId id клиента
+     * @param money сумма на счету
+     * @return Статус операции
+     */
+    public Response<Account> createAccount(Long customerId, Double money) {
+        try {
+            if (money < 0) {
+                return new Response<>(ERROR,"Illegal count of money. The money must be a positive number", Collections.emptyList());
+            } else {
+                Customer customer = customerService.findById(customerId);
+                if (customer != null) {
+                    Account account = new Account();
+                    account.setCustomer(customer);
+                    account.setMoney(money);
+                    Account savedAccount = accountService.save(account);
+                    return new Response<>(SUCCESS, "Created account with id " + savedAccount.getId(), Collections.singletonList(savedAccount));
+                }
+            }
+            return new Response<>(ERROR,"Customer doesn't exist", Collections.emptyList());
         } catch (Exception e) {
             return new Response<>(ERROR,"Account wasn't created", Collections.emptyList());
         }
@@ -124,8 +150,12 @@ public class AccountController {
             if (account.getMoney() < 0) {
                 return new Response<>(ERROR,"Illegal count of money. The money must be a positive number", Collections.emptyList());
             }
-            accountService.save(account);
-            return new Response<>(SUCCESS, "Updated account with id " + account.getId(), Collections.singletonList(account));
+            if (accountService.findById(account.getId()) != null) {
+                accountService.save(account);
+                return new Response<>(SUCCESS, "Updated account with id " + account.getId(), Collections.singletonList(account));
+            } else {
+                return new Response<>(ERROR,"Account doesn't exist", Collections.emptyList());
+            }
         } catch (Exception e) {
             return new Response<>(ERROR,"Account wasn't updated", Collections.emptyList());
         }
@@ -240,7 +270,7 @@ public class AccountController {
                 if (isSuccessTransfer) {
                     return new Response<>(SUCCESS, "Successful transfer", Arrays.asList(accountService.findById(sourceAccountId), accountService.findById(destinationAccountId)));
                 } else {
-                    return new Response<>(ERROR,"Withdraw failed. Not enough money", Collections.emptyList());
+                    return new Response<>(ERROR,"Transfer failed. Not enough money", Collections.emptyList());
                 }
             }
             return new Response<>(ERROR,"Illegal account id", Collections.emptyList());

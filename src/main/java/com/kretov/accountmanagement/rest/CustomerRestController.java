@@ -42,7 +42,7 @@ public class CustomerRestController {
     @ApiOperation(value = "Удалить клиента")
     @DeleteMapping("/customerDelete/{id}")
     String deleteCustomerByCustomerId(@PathVariable String id) {
-        Response<Customer> response = customerController.findById(id);
+        Response<Customer> response = customerController.deleteCustomerByCustomerId(id);
         return response.getDescription();
     }
 
@@ -70,11 +70,15 @@ public class CustomerRestController {
     @ApiOperation(value = "Изменить данные клиента")
     @PutMapping(value="/customerUpdate/{id}", consumes = APPLICATION_JSON_VALUE)
     String updateCustomer(@PathVariable String id, @RequestBody CustomerDto updatedCustomer) {
-        Customer customer = new Customer();
-        customer.setId(Long.valueOf(id));
-        customer.setFirstName(updatedCustomer.getFirstName());
-        customer.setLastName(updatedCustomer.getLastName());
-        Response<Customer> response = customerController.updateCustomer(customer);
-        return response.getDescription();
+        try {
+            Customer customer = new Customer();
+            customer.setId(Long.valueOf(id));
+            customer.setFirstName(updatedCustomer.getFirstName());
+            customer.setLastName(updatedCustomer.getLastName());
+            Response<Customer> response = customerController.updateCustomer(customer);
+            return response.getDescription();
+        } catch (NumberFormatException e) {
+            return "Illegal format of input data. Please, use number.";
+        }
     }
 }

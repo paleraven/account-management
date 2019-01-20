@@ -53,7 +53,7 @@ public class AccountEditor extends AbstractAccountEditor {
 
         addKeyPressListener(Key.ENTER, e -> save());
 
-        save.addClickListener(e -> save());
+        save.addClickListener(e -> insert());
         delete.addClickListener(e -> delete());
         cancel.addClickListener(e -> editAccount(account));
         setVisible(false);
@@ -66,6 +66,15 @@ public class AccountEditor extends AbstractAccountEditor {
 
     private void save() {
         Response<Account> response = accountController.updateAccount(account);
+        if (response.getStatus().equals(Status.ERROR)) {
+            showNotification(response.getDescription());
+        } else {
+            getChangeHandler().onChange();
+        }
+    }
+
+    private void insert() {
+        Response<Account> response = accountController.createAccount(account);
         if (response.getStatus().equals(Status.ERROR)) {
             showNotification(response.getDescription());
         } else {

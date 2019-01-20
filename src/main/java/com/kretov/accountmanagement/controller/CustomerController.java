@@ -104,8 +104,10 @@ public class CustomerController {
         try {
             Customer existCustomer = customerService.findById(customer.getId());
             if (existCustomer != null) {
-                customerService.save(customer);
-                return new Response<>(SUCCESS, "Updated customer with id " + customer.getId(), Collections.singletonList(customer));
+                existCustomer.setLastName(customer.getLastName());
+                existCustomer.setFirstName(customer.getFirstName());
+                customerService.save(existCustomer);
+                return new Response<>(SUCCESS, "Updated customer with id " + customer.getId(), Collections.singletonList(existCustomer));
             }
             return new Response<>(ERROR,"Customer doesn't exist", Collections.emptyList());
         } catch (Exception e) {
