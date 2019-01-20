@@ -19,6 +19,14 @@ public class Customer {
 	@Column(name = "last_name")
 	private String lastName;
 
+	public Customer(String firstName, String lastName) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+
+	public Customer() {
+	}
+
 	public Long getId() {
 		return id;
 	}

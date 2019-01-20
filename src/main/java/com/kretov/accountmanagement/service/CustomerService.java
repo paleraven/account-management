@@ -21,13 +21,22 @@ public class CustomerService {
 	}
 
 	/**
-	 * Найти конкретного клиента
+	 * Найти конкретного клиента по его id
 	 * @param id идентификатор
 	 * @return клиент
 	 */
 	public Customer findById(Long id) {
 		Optional<Customer> customer = customerRepository.findById(id);
 		return customer.orElse(null);
+	}
+
+	/**
+	 * Найти клиентов по фамилии
+	 * @param lastName фамилия
+	 * @return список клиентов
+	 */
+	public List<Customer> findByLastName(String lastName) {
+		return customerRepository.findByLastName(lastName);
 	}
 
 	/**
