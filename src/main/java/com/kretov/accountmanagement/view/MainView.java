@@ -25,6 +25,8 @@ public class MainView extends VerticalLayout {
     private AccountService accountService;
     private AccountEditor accountEditor;
 
+    private DepositEditor depositEditor;
+
     private Grid<Customer> customerGrid;
     private TextField customerFilter;
     private Button addNewCustomerBtn;
@@ -32,13 +34,19 @@ public class MainView extends VerticalLayout {
 
     private Grid<Account> accountGrid;
     private Button addNewAccountBtn;
+    private Button depositMoneyBtn;
+    private Button withdrawMoneyBtn;
+    private Button transferMoneyBtn;
     private Label accountBlockTitle;
 
-    public MainView(CustomerService customerService, CustomerEditor editor, AccountService accountService, AccountEditor accEditor) {
+    public MainView(CustomerService customerService, CustomerEditor editor,
+                    AccountService accountService, AccountEditor accEditor,
+                    DepositEditor depEditor) {
         this.customerService = customerService;
         this.customerEditor = editor;
         this.accountService = accountService;
         this.accountEditor = accEditor;
+        this.depositEditor = depEditor;
 
         this.customerGrid = new Grid<>(Customer.class);
         this.customerFilter = new TextField();
@@ -50,6 +58,12 @@ public class MainView extends VerticalLayout {
 
         this.addNewAccountBtn = new Button("Add account", VaadinIcon.PLUS.create());
         addNewAccountBtn.onEnabledStateChanged(false);
+        this.depositMoneyBtn = new Button("Deposit", VaadinIcon.WALLET.create());
+        depositMoneyBtn.onEnabledStateChanged(false);
+        this.withdrawMoneyBtn = new Button("Withdraw", VaadinIcon.CASH.create());
+        withdrawMoneyBtn.onEnabledStateChanged(false);
+        this.transferMoneyBtn = new Button("Transfer", VaadinIcon.ARROW_RIGHT.create());
+        transferMoneyBtn.onEnabledStateChanged(false);
 
         this.accountBlockTitle = new Label("Accounts");
 
@@ -72,12 +86,13 @@ public class MainView extends VerticalLayout {
             accountList(e.getValue() != null ? e.getValue().getId().toString() : null);
             accountGrid.onEnabledStateChanged(true);
             addNewAccountBtn.onEnabledStateChanged(true);
+            depositMoneyBtn.onEnabledStateChanged(true);
+            withdrawMoneyBtn.onEnabledStateChanged(true);
+            transferMoneyBtn.onEnabledStateChanged(true);
             accountEditor.setVisible(false);
         });
 
-        addNewCustomerBtn.addClickListener(e -> {
-            customerEditor.editCustomer(new Customer("", ""));
-        });
+        addNewCustomerBtn.addClickListener(e -> customerEditor.editCustomer(new Customer("", "")));
 
         customerEditor.setChangeHandler(() -> {
             customerEditor.setVisible(false);
@@ -88,8 +103,8 @@ public class MainView extends VerticalLayout {
 
         //Accounts
         HorizontalLayout accountBlock = new HorizontalLayout(accountBlockTitle);
-        HorizontalLayout accountActions = new HorizontalLayout(addNewAccountBtn);
-        add(accountBlock, accountActions, accountGrid, accountEditor);
+        HorizontalLayout accountActions = new HorizontalLayout(addNewAccountBtn, depositMoneyBtn, withdrawMoneyBtn, transferMoneyBtn);
+        add(accountBlock, accountActions, accountGrid, accountEditor, depositEditor);
 
         accountGrid.setHeight("300px");
         accountGrid.setColumns("id", "money");
@@ -103,8 +118,19 @@ public class MainView extends VerticalLayout {
             accountList(customerId);
         });
 
+        depositMoneyBtn.addClickListener(e -> {
+            String customerId = customerGrid.asSingleSelect().getValue().getId().toString();
+            depositEditor.editAccount(accountGrid.asSingleSelect().getValue());
+            accountList(customerId);
+        });
+
         accountEditor.setChangeHandler(() -> {
             accountEditor.setVisible(false);
+            accountList(customerGrid.asSingleSelect().getValue().getId().toString());
+        });
+
+        depositEditor.setChangeHandler(() -> {
+            depositEditor.setVisible(false);
             accountList(customerGrid.asSingleSelect().getValue().getId().toString());
         });
 
