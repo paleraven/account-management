@@ -26,6 +26,7 @@ public class MainView extends VerticalLayout {
     private AccountEditor accountEditor;
 
     private DepositEditor depositEditor;
+    private WithdrawEditor withdrawEditor;
 
     private Grid<Customer> customerGrid;
     private TextField customerFilter;
@@ -41,12 +42,13 @@ public class MainView extends VerticalLayout {
 
     public MainView(CustomerService customerService, CustomerEditor editor,
                     AccountService accountService, AccountEditor accEditor,
-                    DepositEditor depEditor) {
+                    DepositEditor depEditor, WithdrawEditor withdrawEdit) {
         this.customerService = customerService;
         this.customerEditor = editor;
         this.accountService = accountService;
         this.accountEditor = accEditor;
         this.depositEditor = depEditor;
+        this.withdrawEditor = withdrawEdit;
 
         this.customerGrid = new Grid<>(Customer.class);
         this.customerFilter = new TextField();
@@ -104,7 +106,7 @@ public class MainView extends VerticalLayout {
         //Accounts
         HorizontalLayout accountBlock = new HorizontalLayout(accountBlockTitle);
         HorizontalLayout accountActions = new HorizontalLayout(addNewAccountBtn, depositMoneyBtn, withdrawMoneyBtn, transferMoneyBtn);
-        add(accountBlock, accountActions, accountGrid, accountEditor, depositEditor);
+        add(accountBlock, accountActions, accountGrid, accountEditor, depositEditor, withdrawEditor);
 
         accountGrid.setHeight("300px");
         accountGrid.setColumns("id", "money");
@@ -112,6 +114,7 @@ public class MainView extends VerticalLayout {
 
         accountGrid.asSingleSelect().addValueChangeListener(e -> accountEditor.editAccount(e.getValue()));
 
+        //account operations listeners
         addNewAccountBtn.addClickListener(e -> {
             String customerId = customerGrid.asSingleSelect().getValue().getId().toString();
             accountEditor.editAccount(new Account(customerService.findById(Long.valueOf(customerId)), null));
@@ -124,6 +127,13 @@ public class MainView extends VerticalLayout {
             accountList(customerId);
         });
 
+        withdrawMoneyBtn.addClickListener(e -> {
+            String customerId = customerGrid.asSingleSelect().getValue().getId().toString();
+            withdrawEditor.editAccount(accountGrid.asSingleSelect().getValue());
+            accountList(customerId);
+        });
+
+        //account handlers
         accountEditor.setChangeHandler(() -> {
             accountEditor.setVisible(false);
             accountList(customerGrid.asSingleSelect().getValue().getId().toString());
@@ -131,6 +141,11 @@ public class MainView extends VerticalLayout {
 
         depositEditor.setChangeHandler(() -> {
             depositEditor.setVisible(false);
+            accountList(customerGrid.asSingleSelect().getValue().getId().toString());
+        });
+
+        withdrawEditor.setChangeHandler(() -> {
+            withdrawEditor.setVisible(false);
             accountList(customerGrid.asSingleSelect().getValue().getId().toString());
         });
 

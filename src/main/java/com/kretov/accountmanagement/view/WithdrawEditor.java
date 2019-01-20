@@ -14,19 +14,19 @@ import com.vaadin.flow.spring.annotation.UIScope;
 
 @SpringComponent
 @UIScope
-public class DepositEditor extends VerticalLayout implements KeyNotifier {
+public class WithdrawEditor extends VerticalLayout implements KeyNotifier {
     private final AccountService accountService;
 
     private Account account;
 
     private TextField money = new TextField("Money");
 
-    private Button depositBtn = new Button("Deposit", VaadinIcon.CHECK.create());
-    private HorizontalLayout actions = new HorizontalLayout(depositBtn);
+    private Button withdrawBtn = new Button("Withdraw", VaadinIcon.CHECK.create());
+    private HorizontalLayout actions = new HorizontalLayout(withdrawBtn);
 
     private ChangeHandler changeHandler;
 
-    public DepositEditor(AccountService accountService) {
+    public WithdrawEditor(AccountService accountService) {
         this.accountService = accountService;
 
         money.setPlaceholder("Only positive numbers");
@@ -35,19 +35,19 @@ public class DepositEditor extends VerticalLayout implements KeyNotifier {
 
         setSpacing(true);
 
-        depositBtn.getElement().getThemeList().add("primary");
+        withdrawBtn.getElement().getThemeList().add("primary");
 
-        addKeyPressListener(Key.ENTER, e -> deposit(money.getValue()));
+        addKeyPressListener(Key.ENTER, e -> withdraw(money.getValue()));
 
-        depositBtn.addClickListener(e -> deposit(money.getValue()));
+        withdrawBtn.addClickListener(e -> withdraw(money.getValue()));
         setVisible(false);
     }
 
-    private void deposit(String money) {
+    private void withdraw(String money) {
         try {
             Double depositMoney = Double.valueOf(money);
             if (depositMoney > 0) {
-                accountService.depositMoney(account, depositMoney);
+                accountService.withdrawMoney(account, depositMoney);
                 changeHandler.onChange();
             }
         } catch (NumberFormatException e) {
