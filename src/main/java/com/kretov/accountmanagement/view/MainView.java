@@ -27,6 +27,7 @@ public class MainView extends VerticalLayout {
 
     private DepositEditor depositEditor;
     private WithdrawEditor withdrawEditor;
+    private TransferEditor transferEditor;
 
     private Grid<Customer> customerGrid;
     private TextField customerFilter;
@@ -42,13 +43,14 @@ public class MainView extends VerticalLayout {
 
     public MainView(CustomerService customerService, CustomerEditor editor,
                     AccountService accountService, AccountEditor accEditor,
-                    DepositEditor depEditor, WithdrawEditor withdrawEdit) {
+                    DepositEditor depEditor, WithdrawEditor withdrawEdit, TransferEditor transferEdit) {
         this.customerService = customerService;
         this.customerEditor = editor;
         this.accountService = accountService;
         this.accountEditor = accEditor;
         this.depositEditor = depEditor;
         this.withdrawEditor = withdrawEdit;
+        this.transferEditor = transferEdit;
 
         this.customerGrid = new Grid<>(Customer.class);
         this.customerFilter = new TextField();
@@ -58,6 +60,7 @@ public class MainView extends VerticalLayout {
         this.accountGrid = new Grid<>(Account.class);
         accountGrid.onEnabledStateChanged(false);
 
+        //Account buttons
         this.addNewAccountBtn = new Button("Add account", VaadinIcon.PLUS.create());
         addNewAccountBtn.onEnabledStateChanged(false);
         this.depositMoneyBtn = new Button("Deposit", VaadinIcon.WALLET.create());
@@ -106,7 +109,7 @@ public class MainView extends VerticalLayout {
         //Accounts
         HorizontalLayout accountBlock = new HorizontalLayout(accountBlockTitle);
         HorizontalLayout accountActions = new HorizontalLayout(addNewAccountBtn, depositMoneyBtn, withdrawMoneyBtn, transferMoneyBtn);
-        add(accountBlock, accountActions, accountGrid, accountEditor, depositEditor, withdrawEditor);
+        add(accountBlock, accountActions, accountGrid, accountEditor, depositEditor, withdrawEditor, transferEditor);
 
         accountGrid.setHeight("300px");
         accountGrid.setColumns("id", "money");
@@ -133,6 +136,12 @@ public class MainView extends VerticalLayout {
             accountList(customerId);
         });
 
+        transferMoneyBtn.addClickListener(e -> {
+            String customerId = customerGrid.asSingleSelect().getValue().getId().toString();
+            transferEditor.editAccount(accountGrid.asSingleSelect().getValue());
+            accountList(customerId);
+        });
+
         //account handlers
         accountEditor.setChangeHandler(() -> {
             accountEditor.setVisible(false);
@@ -146,6 +155,11 @@ public class MainView extends VerticalLayout {
 
         withdrawEditor.setChangeHandler(() -> {
             withdrawEditor.setVisible(false);
+            accountList(customerGrid.asSingleSelect().getValue().getId().toString());
+        });
+
+        transferEditor.setChangeHandler(() -> {
+            transferEditor.setVisible(false);
             accountList(customerGrid.asSingleSelect().getValue().getId().toString());
         });
 
