@@ -13,21 +13,48 @@ public class AccountService {
 	@Autowired
 	private AccountRepository accountRepository;
 
+	/**
+	 * Найти все счета конкретного клиента
+	 * @param customer клиент
+	 * @return список счетов
+	 */
 	public List<Account> findByCustomer(Customer customer) {
 		return accountRepository.findByCustomer(customer);
 	}
 
+	/**
+	 * Найти конкретный счет
+	 * @param id идентификатор
+	 * @return счет
+	 */
 	public Account findById(Long id) {
 		Optional<Account> account = accountRepository.findById(id);
-		return account.orElseGet(null);
+		return account.orElse(null);
 	}
 
+	/**
+	 * Получить все счета
+	 * @return список счетов
+	 */
 	public List<Account> findAllAccounts() {
 		return accountRepository.findAll();
 	}
 
+	/**
+	 * Сохранить счет
+	 * @param account счет
+	 * @return актуальный счет
+	 */
 	public Account save(Account account) {
 		return accountRepository.save(account);
+	}
+
+	/**
+	 * Удалить счет
+	 * @param id идентификатор
+	 */
+	public void deleteById(Long id) {
+		accountRepository.deleteById(id);
 	}
 
 	/**

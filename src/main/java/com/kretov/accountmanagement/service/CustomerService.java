@@ -12,16 +12,47 @@ public class CustomerService {
 	@Autowired
 	private CustomerRepository customerRepository;
 
+	/**
+	 * Получить всех клиентов
+	 * @return список клиентов
+	 */
 	public List<Customer> findAll() {
 		return customerRepository.findAll();
 	}
 
+	/**
+	 * Найти конкретного клиента по его id
+	 * @param id идентификатор
+	 * @return клиент
+	 */
 	public Customer findById(Long id) {
 		Optional<Customer> customer = customerRepository.findById(id);
-		return customer.orElseGet(null);
+		return customer.orElse(null);
 	}
 
+	/**
+	 * Найти клиентов по фамилии
+	 * @param lastName фамилия
+	 * @return список клиентов
+	 */
+	public List<Customer> findByLastName(String lastName) {
+		return customerRepository.findByLastName(lastName);
+	}
+
+	/**
+	 * Сохранить клиента
+	 * @param customer клиент
+	 * @return актуальное состояние клиента
+	 */
 	public Customer save(Customer customer) {
 		return customerRepository.save(customer);
+	}
+
+	/**
+	 * Удалить клиента
+	 * @param id идентификатор
+	 */
+	public void deleteById(Long id) {
+		customerRepository.deleteById(id);
 	}
 }
