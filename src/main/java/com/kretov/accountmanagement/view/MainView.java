@@ -31,7 +31,6 @@ public class MainView extends VerticalLayout {
     private Label customerBlockTitle;
 
     private Grid<Account> accountGrid;
-    private TextField accountFilter;
     private Button addNewAccountBtn;
     private Label accountBlockTitle;
 
@@ -47,8 +46,11 @@ public class MainView extends VerticalLayout {
         this.customerBlockTitle = new Label("Customers");
 
         this.accountGrid = new Grid<>(Account.class);
-        this.accountFilter = new TextField();
+        accountGrid.onEnabledStateChanged(false);
+
         this.addNewAccountBtn = new Button("Add account", VaadinIcon.PLUS.create());
+        addNewAccountBtn.onEnabledStateChanged(false);
+
         this.accountBlockTitle = new Label("Accounts");
 
         //Customers
@@ -65,39 +67,45 @@ public class MainView extends VerticalLayout {
         customerFilter.setValueChangeMode(ValueChangeMode.EAGER);
         customerFilter.addValueChangeListener(e -> customerList(e.getValue()));
 
-        customerGrid.asSingleSelect().addValueChangeListener(e -> customerEditor.editCustomer(e.getValue()));
+        customerGrid.asSingleSelect().addValueChangeListener(e -> {
+            customerEditor.editCustomer(e.getValue());
+            accountList(e.getValue() != null ? e.getValue().getId().toString() : null);
+            accountGrid.onEnabledStateChanged(true);
+            addNewAccountBtn.onEnabledStateChanged(true);
+            accountEditor.setVisible(false);
+        });
 
-        addNewCustomerBtn.addClickListener(e -> customerEditor.editCustomer(new Customer("", "")));
+        addNewCustomerBtn.addClickListener(e -> {
+            customerEditor.editCustomer(new Customer("", ""));
+        });
 
         customerEditor.setChangeHandler(() -> {
             customerEditor.setVisible(false);
             customerList(customerFilter.getValue());
-            accountList(accountFilter.getValue());
         });
 
         customerList(null);
 
         //Accounts
         HorizontalLayout accountBlock = new HorizontalLayout(accountBlockTitle);
-        HorizontalLayout accountActions = new HorizontalLayout(accountFilter, addNewAccountBtn);
+        HorizontalLayout accountActions = new HorizontalLayout(addNewAccountBtn);
         add(accountBlock, accountActions, accountGrid, accountEditor);
 
         accountGrid.setHeight("300px");
-        accountGrid.setColumns("id", "customer", "money");
+        accountGrid.setColumns("id", "money");
         accountGrid.getColumnByKey("id").setWidth("100px").setFlexGrow(0);
-
-        accountFilter.setPlaceholder("Filter by customer id");
-
-        accountFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        accountFilter.addValueChangeListener(e -> accountList(e.getValue()));
 
         accountGrid.asSingleSelect().addValueChangeListener(e -> accountEditor.editAccount(e.getValue()));
 
-        addNewAccountBtn.addClickListener(e -> accountEditor.editAccount(new Account(customerService.findAll().get(0), null)));
+        addNewAccountBtn.addClickListener(e -> {
+            String customerId = customerGrid.asSingleSelect().getValue().getId().toString();
+            accountEditor.editAccount(new Account(customerService.findById(Long.valueOf(customerId)), null));
+            accountList(customerId);
+        });
 
         accountEditor.setChangeHandler(() -> {
             accountEditor.setVisible(false);
-            accountList(accountFilter.getValue());
+            accountList(customerGrid.asSingleSelect().getValue().getId().toString());
         });
 
         accountList(null);
