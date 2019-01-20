@@ -12,6 +12,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
+import static com.kretov.accountmanagement.view.Util.showNotification;
+
 @SpringComponent
 @UIScope
 public class DepositEditor extends VerticalLayout implements KeyNotifier {
@@ -49,9 +51,11 @@ public class DepositEditor extends VerticalLayout implements KeyNotifier {
             if (depositMoney > 0) {
                 accountService.depositMoney(account, depositMoney);
                 changeHandler.onChange();
+            } else {
+                showNotification("Money must be a positive number");
             }
         } catch (NumberFormatException e) {
-            changeHandler.onChange();
+            showNotification("Illegal input format");
         }
     }
 

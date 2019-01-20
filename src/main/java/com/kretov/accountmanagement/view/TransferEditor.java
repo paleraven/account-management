@@ -12,6 +12,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
+import static com.kretov.accountmanagement.view.Util.showNotification;
+
 @SpringComponent
 @UIScope
 public class TransferEditor extends VerticalLayout implements KeyNotifier {
@@ -49,11 +51,16 @@ public class TransferEditor extends VerticalLayout implements KeyNotifier {
             Double transferMoney = Double.valueOf(money);
             Long destinationAccountId = Long.valueOf(destination);
             if (transferMoney > 0) {
-                accountService.transferMoney(account, accountService.findById(destinationAccountId), transferMoney);
+                boolean status = accountService.transferMoney(account, accountService.findById(destinationAccountId), transferMoney);
+                if (!status) {
+                    showNotification("Transfer failed. Not enough money");
+                }
                 changeHandler.onChange();
+            } else {
+                showNotification("Money must be a positive number");
             }
         } catch (NumberFormatException e) {
-            changeHandler.onChange();
+            showNotification("Illegal input format");
         }
     }
 

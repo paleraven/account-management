@@ -95,6 +95,9 @@ public class MainView extends VerticalLayout {
             withdrawMoneyBtn.onEnabledStateChanged(true);
             transferMoneyBtn.onEnabledStateChanged(true);
             accountEditor.setVisible(false);
+            depositEditor.setVisible(false);
+            withdrawEditor.setVisible(false);
+            transferEditor.setVisible(false);
         });
 
         addNewCustomerBtn.addClickListener(e -> customerEditor.editCustomer(new Customer("", "")));

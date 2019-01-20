@@ -12,6 +12,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
+import static com.kretov.accountmanagement.view.Util.showNotification;
+
 @SpringComponent
 @UIScope
 public class WithdrawEditor extends VerticalLayout implements KeyNotifier {
@@ -47,11 +49,16 @@ public class WithdrawEditor extends VerticalLayout implements KeyNotifier {
         try {
             Double depositMoney = Double.valueOf(money);
             if (depositMoney > 0) {
-                accountService.withdrawMoney(account, depositMoney);
+                boolean status = accountService.withdrawMoney(account, depositMoney);
+                if (!status) {
+                    showNotification("Withdraw failed. Not enough money");
+                }
                 changeHandler.onChange();
+            } else {
+                showNotification("Money must be a positive number");
             }
         } catch (NumberFormatException e) {
-            changeHandler.onChange();
+            showNotification("Illegal input format");
         }
     }
 
