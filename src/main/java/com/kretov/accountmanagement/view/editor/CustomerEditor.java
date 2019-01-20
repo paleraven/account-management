@@ -1,5 +1,6 @@
 package com.kretov.accountmanagement.view.editor;
 
+import com.kretov.accountmanagement.controller.CustomerController;
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.service.CustomerService;
 import com.vaadin.flow.component.Key;
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @UIScope
 public class CustomerEditor extends AbstractEditor {
 
-    private final CustomerService customerService;
+    private final CustomerController customerController;
 
     private Customer customer;
 
@@ -31,8 +32,8 @@ public class CustomerEditor extends AbstractEditor {
     private Binder<Customer> binder = new Binder<>(Customer.class);
 
     @Autowired
-    public CustomerEditor(CustomerService customerService) {
-        this.customerService = customerService;
+    public CustomerEditor(CustomerController controller) {
+        this.customerController = controller;
 
         add(firstName, lastName, actions);
 
@@ -45,19 +46,24 @@ public class CustomerEditor extends AbstractEditor {
 
         addKeyPressListener(Key.ENTER, e -> save());
 
-        save.addClickListener(e -> save());
+        save.addClickListener(e -> insert());
         delete.addClickListener(e -> delete());
         cancel.addClickListener(e -> editCustomer(customer));
         setVisible(false);
     }
 
     private void delete() {
-        customerService.deleteById(customer.getId());
+        customerController.deleteCustomerByCustomerId(customer.getId().toString());
+        getChangeHandler().onChange();
+    }
+
+    private void insert() {
+        customerController.createCustomer(customer);
         getChangeHandler().onChange();
     }
 
     private void save() {
-        customerService.save(customer);
+        customerController.saveCustomer(customer);
         getChangeHandler().onChange();
     }
 
@@ -68,7 +74,7 @@ public class CustomerEditor extends AbstractEditor {
         }
         final boolean persisted = editableCustomer.getId() != null;
         if (persisted) {
-            customer = customerService.findById(editableCustomer.getId());
+            customer = customerController.findById(editableCustomer.getId().toString()).getResult().get(0);
         } else {
             customer = editableCustomer;
         }

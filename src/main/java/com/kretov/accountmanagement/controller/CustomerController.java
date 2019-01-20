@@ -2,22 +2,20 @@ package com.kretov.accountmanagement.controller;
 
 import com.kretov.accountmanagement.dto.CustomerDto;
 import com.kretov.accountmanagement.entity.Customer;
+import com.kretov.accountmanagement.response.Response;
 import com.kretov.accountmanagement.service.CustomerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static com.kretov.accountmanagement.response.Response.illegalFormatResponse;
+import static com.kretov.accountmanagement.response.Status.ERROR;
+import static com.kretov.accountmanagement.response.Status.SUCCESS;
 
-@Api(value = "Customer", description = "API для работы с клиентами")
-@RestController
-@RequestMapping("/bank")
+@Controller
 public class CustomerController {
-
     @Autowired
     private CustomerService customerService;
 
@@ -26,11 +24,43 @@ public class CustomerController {
      *
      * @return json со всеми клиентами
      */
-    @ApiOperation(value = "Получить всех клиентов")
-    @GetMapping("/customers")
-    List<String> getAllCustomers() {
+    public Response<Customer> getAllCustomers() {
         List<Customer> customers = customerService.findAll();
-        return customers.stream().map(Customer::toString).collect(Collectors.toList());
+        if (customers.isEmpty()) {
+            return new Response<>(ERROR,"No customers", Collections.emptyList());
+        }
+        return new Response<>(SUCCESS,"Found " + customers.size() + " customers", customers);
+    }
+
+    /**
+     * Получить клиента по id
+     * @param id идентификатор
+     * @return Статус операции
+     */
+    public Response<Customer> findById(String id) {
+        try {
+            Long customerId = Long.valueOf(id);
+            Customer customer = customerService.findById(customerId);
+            if (customer != null) {
+                return new Response<>(SUCCESS, "Customer with id " + id + " was found", Collections.singletonList(customer));
+            }
+            return new Response<>(ERROR, "No customers", Collections.emptyList());
+        } catch (NumberFormatException e) {
+            return illegalFormatResponse();
+        }
+    }
+
+    /**
+     * Получить клиентов по фамилии
+     * @param lastName фамилия
+     * @return Статус операции
+     */
+    public Response<Customer> findByLastName(String lastName) {
+        List<Customer> customers = customerService.findByLastName(lastName);
+        if (customers.isEmpty()) {
+            return new Response<>(ERROR,"No customers with family " + lastName, Collections.emptyList());
+        }
+        return new Response<>(SUCCESS,"Found " + customers.size() + " customers", customers);
     }
 
     /**
@@ -38,19 +68,17 @@ public class CustomerController {
      * @param id идентификатор
      * @return Статус операции
      */
-    @ApiOperation(value = "Удалить клиента")
-    @DeleteMapping("/customerDelete/{id}")
-    String deleteCustomerByCustomerId(@PathVariable String id) {
+    public Response<Customer> deleteCustomerByCustomerId(String id) {
         try {
             Long customerId = Long.valueOf(id);
             Customer customer = customerService.findById(customerId);
             if (customer != null) {
                 customerService.deleteById(customerId);
-                return "Customer with id " + id + " was deleted";
+                return new Response<>(SUCCESS,"Customer with id " + id + " was deleted", Collections.emptyList());
             }
-            return "Operation isn't executed. Illegal customer id";
+            return new Response<>(ERROR,"Illegal customer id", Collections.emptyList());
         } catch (NumberFormatException e) {
-            return "Operation isn't executed. Illegal format of input data. Please, use number.";
+            return illegalFormatResponse();
         }
     }
 
@@ -59,14 +87,27 @@ public class CustomerController {
      * @param newCustomer dto с личными данными
      * @return Статус операции
      */
-    @ApiOperation(value = "Создать клиента")
-    @PostMapping(value="/customerCreate", consumes = APPLICATION_JSON_VALUE)
-    String createCustomer(@RequestBody CustomerDto newCustomer) {
-        Customer customer = new Customer();
-        customer.setFirstName(newCustomer.getFirstName());
-        customer.setLastName(newCustomer.getLastName());
-        customerService.save(customer);
-        return "Created customer with id " + customer.getId();
+    public Response<Customer> createCustomer(Customer newCustomer) {
+        try {
+            customerService.save(newCustomer);
+            return new Response<>(SUCCESS, "Created customer with id " + newCustomer.getId(), Collections.singletonList(newCustomer));
+        } catch (Exception e) {
+            return new Response<>(ERROR,"Customer wasn't created", Collections.emptyList());
+        }
+    }
+
+    /**
+     * Создать нового клиента
+     * @param customer dto с личными данными
+     * @return Статус операции
+     */
+    public Response<Customer> saveCustomer(Customer customer) {
+        try {
+            customerService.save(customer);
+            return new Response<>(SUCCESS, "Created customer with id " + customer.getId(), Collections.singletonList(customer));
+        } catch (Exception e) {
+            return new Response<>(ERROR,"Customer wasn't created", Collections.emptyList());
+        }
     }
 
     /**
@@ -75,9 +116,7 @@ public class CustomerController {
      * @param updatedCustomer новые данные
      * @return Статус операции
      */
-    @ApiOperation(value = "Изменить данные клиента")
-    @PutMapping(value="/customerUpdate/{id}", consumes = APPLICATION_JSON_VALUE)
-    String updateCustomer(@PathVariable String id, @RequestBody CustomerDto updatedCustomer) {
+    public Response<Customer> updateCustomer(String id, CustomerDto updatedCustomer) {
         try {
             Long customerId = Long.valueOf(id);
             Customer customer = customerService.findById(customerId);
@@ -85,11 +124,11 @@ public class CustomerController {
                 customer.setFirstName(updatedCustomer.getFirstName());
                 customer.setLastName(updatedCustomer.getLastName());
                 customerService.save(customer);
-                return "Updated customer with id " + customer.getId();
+                return new Response<>(SUCCESS, "Updated customer with id " + customer.getId(), Collections.singletonList(customer));
             }
-            return "Operation isn't executed. Illegal customer id";
+            return new Response<>(ERROR,"Illegal customer id", Collections.emptyList());
         } catch (NumberFormatException e) {
-            return "Operation isn't executed. Illegal format of input data. Please, use number.";
+            return illegalFormatResponse();
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.kretov.accountmanagement.view;
 
+import com.kretov.accountmanagement.controller.CustomerController;
 import com.kretov.accountmanagement.entity.Account;
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.service.AccountService;
@@ -24,7 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Route(value = "ui")
 public class MainView extends VerticalLayout {
 
-    private CustomerService customerService;
+    private CustomerController customerController;
     private CustomerEditor customerEditor;
 
     private AccountService accountService;
@@ -46,10 +47,10 @@ public class MainView extends VerticalLayout {
     private Button transferMoneyBtn;
     private Label accountBlockTitle;
 
-    public MainView(CustomerService customerService, CustomerEditor editor,
+    public MainView(CustomerController customerController, CustomerEditor editor,
                     AccountService accountService, AccountEditor accEditor,
                     DepositEditor depEditor, WithdrawEditor withdrawEdit, TransferEditor transferEdit) {
-        this.customerService = customerService;
+        this.customerController = customerController;
         this.customerEditor = editor;
         this.accountService = accountService;
         this.accountEditor = accEditor;
@@ -128,7 +129,7 @@ public class MainView extends VerticalLayout {
         //account operations listeners
         addNewAccountBtn.addClickListener(e -> {
             String customerId = customerGrid.asSingleSelect().getValue().getId().toString();
-            accountEditor.editAccount(new Account(customerService.findById(Long.valueOf(customerId)), null));
+            accountEditor.editAccount(new Account(customerController.findById(customerId).getResult().get(0), null));
             accountList(customerId);
         });
 
@@ -176,9 +177,9 @@ public class MainView extends VerticalLayout {
 
     private void customerList(String lastName) {
         if (isBlank(lastName)) {
-            customerGrid.setItems(customerService.findAll());
+            customerGrid.setItems(customerController.getAllCustomers().getResult());
         } else {
-            customerGrid.setItems(customerService.findByLastName(lastName));
+            customerGrid.setItems(customerController.findByLastName(lastName).getResult());
         }
     }
 
@@ -186,7 +187,7 @@ public class MainView extends VerticalLayout {
         if (isBlank(id)) {
             accountGrid.setItems(accountService.findAllAccounts());
         } else {
-            accountGrid.setItems(accountService.findByCustomer(customerService.findById(Long.valueOf(id))));
+            accountGrid.setItems(accountService.findByCustomer(customerController.findById(id).getResult().get(0)));
         }
     }
 }

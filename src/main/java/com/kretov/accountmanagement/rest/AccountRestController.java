@@ -1,4 +1,4 @@
-package com.kretov.accountmanagement.controller;
+package com.kretov.accountmanagement.rest;
 
 import com.kretov.accountmanagement.dto.AccountDto;
 import com.kretov.accountmanagement.entity.Account;
@@ -18,7 +18,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(value = "Account", description = "API для работы со счетами клиентов")
 @RestController
 @RequestMapping("/bank")
-public class AccountController {
+public class AccountRestController {
 
 	@Autowired
 	private AccountService accountService;
