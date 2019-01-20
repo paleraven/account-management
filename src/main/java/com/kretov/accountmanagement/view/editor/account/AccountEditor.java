@@ -1,7 +1,9 @@
 package com.kretov.accountmanagement.view.editor.account;
 
+import com.kretov.accountmanagement.controller.AccountController;
 import com.kretov.accountmanagement.entity.Account;
-import com.kretov.accountmanagement.service.AccountService;
+import com.kretov.accountmanagement.response.Response;
+import com.kretov.accountmanagement.response.Status;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -13,10 +15,12 @@ import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
+import static com.kretov.accountmanagement.view.util.Util.showNotification;
+
 @SpringComponent
 @UIScope
 public class AccountEditor extends AbstractAccountEditor {
-    private final AccountService accountService;
+    private final AccountController accountController;
 
     private TextField customerId = new TextField("Customer id");
 
@@ -27,8 +31,8 @@ public class AccountEditor extends AbstractAccountEditor {
 
     private Binder<Account> binder = new Binder<>(Account.class);
 
-    public AccountEditor(AccountService accountService) {
-        this.accountService = accountService;
+    public AccountEditor(AccountController accountController) {
+        this.accountController = accountController;
 
         add(customerId, money, actions);
 
@@ -56,13 +60,17 @@ public class AccountEditor extends AbstractAccountEditor {
     }
 
     private void delete() {
-        accountService.deleteById(account.getId());
+        accountController.deleteAccountByAccountId(account.getId().toString());
         getChangeHandler().onChange();
     }
 
     private void save() {
-        accountService.save(account);
-        getChangeHandler().onChange();
+        Response<Account> response = accountController.updateAccount(account);
+        if (response.getStatus().equals(Status.ERROR)) {
+            showNotification(response.getDescription());
+        } else {
+            getChangeHandler().onChange();
+        }
     }
 
     public final void editAccount(Account editableAccount) {
@@ -72,7 +80,7 @@ public class AccountEditor extends AbstractAccountEditor {
         }
         final boolean persisted = editableAccount.getId() != null;
         if (persisted) {
-            account = accountService.findById(editableAccount.getId());
+            account = accountController.getAccountByAccountId(editableAccount.getId().toString()).getResult().get(0);
         } else {
             account = editableAccount;
         }

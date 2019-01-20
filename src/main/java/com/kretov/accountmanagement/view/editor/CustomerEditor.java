@@ -63,7 +63,7 @@ public class CustomerEditor extends AbstractEditor {
     }
 
     private void save() {
-        customerController.saveCustomer(customer);
+        customerController.updateCustomer(customer);
         getChangeHandler().onChange();
     }
 

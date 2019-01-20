@@ -1,10 +1,9 @@
 package com.kretov.accountmanagement.view;
 
+import com.kretov.accountmanagement.controller.AccountController;
 import com.kretov.accountmanagement.controller.CustomerController;
 import com.kretov.accountmanagement.entity.Account;
 import com.kretov.accountmanagement.entity.Customer;
-import com.kretov.accountmanagement.service.AccountService;
-import com.kretov.accountmanagement.service.CustomerService;
 import com.kretov.accountmanagement.view.editor.*;
 import com.kretov.accountmanagement.view.editor.account.AccountEditor;
 import com.kretov.accountmanagement.view.editor.account.DepositEditor;
@@ -28,7 +27,7 @@ public class MainView extends VerticalLayout {
     private CustomerController customerController;
     private CustomerEditor customerEditor;
 
-    private AccountService accountService;
+    private AccountController accountController;
     private AccountEditor accountEditor;
 
     private DepositEditor depositEditor;
@@ -48,11 +47,12 @@ public class MainView extends VerticalLayout {
     private Label accountBlockTitle;
 
     public MainView(CustomerController customerController, CustomerEditor editor,
-                    AccountService accountService, AccountEditor accEditor,
+                    AccountController accController, AccountEditor accEditor,
                     DepositEditor depEditor, WithdrawEditor withdrawEdit, TransferEditor transferEdit) {
         this.customerController = customerController;
         this.customerEditor = editor;
-        this.accountService = accountService;
+
+        this.accountController = accController;
         this.accountEditor = accEditor;
         this.depositEditor = depEditor;
         this.withdrawEditor = withdrawEdit;
@@ -183,11 +183,11 @@ public class MainView extends VerticalLayout {
         }
     }
 
-    private void accountList(String id) {
-        if (isBlank(id)) {
-            accountGrid.setItems(accountService.findAllAccounts());
+    private void accountList(String customerId) {
+        if (isBlank(customerId)) {
+            accountGrid.setItems(accountController.getAllAccounts().getResult());
         } else {
-            accountGrid.setItems(accountService.findByCustomer(customerController.findById(id).getResult().get(0)));
+            accountGrid.setItems(accountController.getAccountsByCustomerId(customerId).getResult());
         }
     }
 }

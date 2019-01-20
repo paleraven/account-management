@@ -97,16 +97,16 @@ public class CustomerController {
     }
 
     /**
-     * Создать нового клиента
-     * @param customer dto с личными данными
+     * Обновить клиента
+     * @param customer клиент
      * @return Статус операции
      */
-    public Response<Customer> saveCustomer(Customer customer) {
+    public Response<Customer> updateCustomer(Customer customer) {
         try {
             customerService.save(customer);
-            return new Response<>(SUCCESS, "Created customer with id " + customer.getId(), Collections.singletonList(customer));
+            return new Response<>(SUCCESS, "Updated customer with id " + customer.getId(), Collections.singletonList(customer));
         } catch (Exception e) {
-            return new Response<>(ERROR,"Customer wasn't created", Collections.emptyList());
+            return new Response<>(ERROR,"Customer wasn't updated", Collections.emptyList());
         }
     }
 
