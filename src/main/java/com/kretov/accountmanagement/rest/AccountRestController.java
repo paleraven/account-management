@@ -134,7 +134,7 @@ public class AccountRestController {
 	 *
 	 * @param id счет
 	 * @param money сумма пополнения
-	 * @return json с новым состоянием счета
+	 * @return Статус операции и новое состояние счета
 	 */
     @ApiOperation(value = "Положить деньги на счет")
 	@PutMapping("/deposit/{id}/{money}")

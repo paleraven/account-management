@@ -29,7 +29,7 @@ public class AccountController {
     /**
      * Получить все банковские счета
      *
-     * @return json со всеми счетами
+     * @return Статус операции и все счета
      */
     public Response<Account> getAllAccounts() {
         List<Account> accounts = accountService.findAllAccounts();
@@ -195,7 +195,7 @@ public class AccountController {
      *
      * @param id счет
      * @param money сумма пополнения
-     * @return json с новым состоянием счета
+     * @return Статус операции и новое состояние счета
      */
     public Response<Account> depositMoney(String id, String money) {
         try {
