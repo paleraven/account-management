@@ -1,32 +1,26 @@
-package com.kretov.accountmanagement.view;
+package com.kretov.accountmanagement.view.editor.account;
 
 import com.kretov.accountmanagement.entity.Account;
 import com.kretov.accountmanagement.service.AccountService;
 import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
-import static com.kretov.accountmanagement.view.Util.showNotification;
+import static com.kretov.accountmanagement.view.util.Util.showNotification;
 
 @SpringComponent
 @UIScope
-public class WithdrawEditor extends VerticalLayout implements KeyNotifier {
+public class WithdrawEditor extends AbstractAccountEditor {
     private final AccountService accountService;
-
-    private Account account;
 
     private TextField money = new TextField("Money");
 
     private Button withdrawBtn = new Button("Withdraw", VaadinIcon.CHECK.create());
     private HorizontalLayout actions = new HorizontalLayout(withdrawBtn);
-
-    private ChangeHandler changeHandler;
 
     public WithdrawEditor(AccountService accountService) {
         this.accountService = accountService;
@@ -53,7 +47,7 @@ public class WithdrawEditor extends VerticalLayout implements KeyNotifier {
                 if (!status) {
                     showNotification("Withdraw failed. Not enough money");
                 }
-                changeHandler.onChange();
+                getChangeHandler().onChange();
             } else {
                 showNotification("Money must be a positive number");
             }
@@ -62,28 +56,8 @@ public class WithdrawEditor extends VerticalLayout implements KeyNotifier {
         }
     }
 
-    public interface ChangeHandler {
-        void onChange();
-    }
-
-    final void editAccount(Account editableAccount) {
-        if (editableAccount == null) {
-            setVisible(false);
-            return;
-        }
-        final boolean persisted = editableAccount.getId() != null;
-        if (persisted) {
-            account = accountService.findById(editableAccount.getId());
-        } else {
-            account = editableAccount;
-        }
-
-        setVisible(true);
-        money.focus();
-    }
-
-    void setChangeHandler(ChangeHandler h) {
-        changeHandler = h;
+    public final void editAccount(Account editableAccount) {
+        processAccount(editableAccount, accountService);
     }
 
 }

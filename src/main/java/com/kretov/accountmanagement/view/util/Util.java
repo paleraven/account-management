@@ -1,12 +1,12 @@
-package com.kretov.accountmanagement.view;
+package com.kretov.accountmanagement.view.util;
 
 import com.vaadin.flow.component.notification.Notification;
 
-class Util {
+public class Util {
     private Util() {
     }
 
-    static void showNotification(String message) {
+    public static void showNotification(String message) {
         Notification notification = new Notification(message, 3000);
         notification.open();
     }

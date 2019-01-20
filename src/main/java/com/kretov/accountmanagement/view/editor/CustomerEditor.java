@@ -1,13 +1,11 @@
-package com.kretov.accountmanagement.view;
+package com.kretov.accountmanagement.view.editor;
 
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.service.CustomerService;
 import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -16,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringComponent
 @UIScope
-public class CustomerEditor extends VerticalLayout implements KeyNotifier {
+public class CustomerEditor extends AbstractEditor {
 
     private final CustomerService customerService;
 
@@ -31,7 +29,6 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
     private HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
     private Binder<Customer> binder = new Binder<>(Customer.class);
-    private ChangeHandler changeHandler;
 
     @Autowired
     public CustomerEditor(CustomerService customerService) {
@@ -56,19 +53,15 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
 
     private void delete() {
         customerService.deleteById(customer.getId());
-        changeHandler.onChange();
+        getChangeHandler().onChange();
     }
 
     private void save() {
         customerService.save(customer);
-        changeHandler.onChange();
+        getChangeHandler().onChange();
     }
 
-    public interface ChangeHandler {
-        void onChange();
-    }
-
-    final void editCustomer(Customer editableCustomer) {
+    public final void editCustomer(Customer editableCustomer) {
         if (editableCustomer == null) {
             setVisible(false);
             return;
@@ -84,9 +77,5 @@ public class CustomerEditor extends VerticalLayout implements KeyNotifier {
         binder.setBean(customer);
         setVisible(true);
         firstName.focus();
-    }
-
-    void setChangeHandler(ChangeHandler h) {
-        changeHandler = h;
     }
 }
