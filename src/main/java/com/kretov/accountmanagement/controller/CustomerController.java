@@ -1,6 +1,5 @@
 package com.kretov.accountmanagement.controller;
 
-import com.kretov.accountmanagement.dto.CustomerDto;
 import com.kretov.accountmanagement.entity.Customer;
 import com.kretov.accountmanagement.response.Response;
 import com.kretov.accountmanagement.service.CustomerService;
@@ -22,7 +21,7 @@ public class CustomerController {
     /**
      * Получить всех клиентов
      *
-     * @return json со всеми клиентами
+     * @return Response<Customer>
      */
     public Response<Customer> getAllCustomers() {
         List<Customer> customers = customerService.findAll();
@@ -35,7 +34,7 @@ public class CustomerController {
     /**
      * Получить клиента по id
      * @param id идентификатор
-     * @return Статус операции
+     * @return Response<Customer>
      */
     public Response<Customer> findById(String id) {
         try {
@@ -53,7 +52,7 @@ public class CustomerController {
     /**
      * Получить клиентов по фамилии
      * @param lastName фамилия
-     * @return Статус операции
+     * @return Response<Customer>
      */
     public Response<Customer> findByLastName(String lastName) {
         List<Customer> customers = customerService.findByLastName(lastName);
@@ -66,7 +65,7 @@ public class CustomerController {
     /**
      * Удалить клиента
      * @param id идентификатор
-     * @return Статус операции
+     * @return Response<Customer>
      */
     public Response<Customer> deleteCustomerByCustomerId(String id) {
         try {
@@ -85,7 +84,7 @@ public class CustomerController {
     /**
      * Создать нового клиента
      * @param newCustomer dto с личными данными
-     * @return Статус операции
+     * @return Response<Customer>
      */
     public Response<Customer> createCustomer(Customer newCustomer) {
         try {
@@ -99,36 +98,18 @@ public class CustomerController {
     /**
      * Обновить клиента
      * @param customer клиент
-     * @return Статус операции
+     * @return Response<Customer>
      */
     public Response<Customer> updateCustomer(Customer customer) {
         try {
-            customerService.save(customer);
-            return new Response<>(SUCCESS, "Updated customer with id " + customer.getId(), Collections.singletonList(customer));
-        } catch (Exception e) {
-            return new Response<>(ERROR,"Customer wasn't updated", Collections.emptyList());
-        }
-    }
-
-    /**
-     * Обновить существующего клиента
-     * @param id идентификатор
-     * @param updatedCustomer новые данные
-     * @return Статус операции
-     */
-    public Response<Customer> updateCustomer(String id, CustomerDto updatedCustomer) {
-        try {
-            Long customerId = Long.valueOf(id);
-            Customer customer = customerService.findById(customerId);
-            if (customer != null) {
-                customer.setFirstName(updatedCustomer.getFirstName());
-                customer.setLastName(updatedCustomer.getLastName());
+            Customer existCustomer = customerService.findById(customer.getId());
+            if (existCustomer != null) {
                 customerService.save(customer);
                 return new Response<>(SUCCESS, "Updated customer with id " + customer.getId(), Collections.singletonList(customer));
             }
-            return new Response<>(ERROR,"Illegal customer id", Collections.emptyList());
-        } catch (NumberFormatException e) {
-            return illegalFormatResponse();
+            return new Response<>(ERROR,"Customer doesn't exist", Collections.emptyList());
+        } catch (Exception e) {
+            return new Response<>(ERROR,"Customer wasn't updated", Collections.emptyList());
         }
     }
 }

@@ -23,7 +23,7 @@ _Отрицательный баланс счета недопустим._
 ### Техническая реализация
 
 + Приложение сделано на _Spring Boot_, параметры в _application.properties_.
-+ Слои контроллеров (REST-контроллеры _AccountController_ и _CustomerController_), сервисов и репозитория (_JpaRepository_).
++ Слои контроллеров (REST-контроллеры _AccountRestController_ и _CustomerRestController_), сервисов и репозитория (_JpaRepository_).
 + Сделаны юнит-тесты на _AccountService_ в части операций _transfer_, _deposit_ и _withdraw_.
 + Добавлен **_swagger_** для удобной проверки API в браузере.
 + Добавлен UI на **Vaadin**
@@ -47,7 +47,7 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 
 #### Примеры локальных запросов (порт 9090)
 
-##### CustomerController
+##### CustomerRestController
 
 + _Получить всех клиентов:_
 **curl localhost:9090/bank/customers**
@@ -61,7 +61,7 @@ UI _swagger_ доступен по адресу **http://localhost:9090/swagger-
 + _Переименовать клиента с id=1 как Sergey Sidorov:_
 **curl -X PUT "http://localhost:9090/bank/customerUpdate/1" -H  "accept: */*" -H  "Content-Type: application/json" -d "{  \\"firstName\\": \\"Sergey\\",  \\"lastName\\": \\"Sidorov\\"}"**
 
-##### AccountController
+##### AccountRestController
 
 + _Получить все счета:_
 **curl localhost:9090/bank/accounts**
